@@ -1,12 +1,11 @@
 services:
-  - type: static_site
-    name: react-frontend-app # Bạn có thể đổi tên này tùy ý
+  - type: web
+    name: react-frontend-app
     env: static
-    rootDir: frontend # Báo cho Render biết code FE nằm ở thư mục này
-    buildCommand: npm install && npm run build # Lệnh cài đặt và đóng gói code
-    staticPublishPath: dist # Thư mục Vite tạo ra sau khi build
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     
-    # Cấu hình này cực kỳ quan trọng cho React để không bị lỗi 404 khi F5 trang
     routes:
       - type: rewrite
         source: /*
