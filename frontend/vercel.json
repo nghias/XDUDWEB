@@ -5,7 +5,7 @@
       "destination": "https://xdpmweb.free.nf/api/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
