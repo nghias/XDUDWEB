@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Dùng biến môi trường, nếu không có sẽ tự động lấy link thật (chắc chắn 100% chạy được)
-const BASE_API = import.meta.env.VITE_BASE_API || 'https://xdpmweb.free.nf/api';
+// Gắn thêm link proxy vào ngay trước link InfinityFree của bạn
+const BASE_API = 'https://corsproxy.io/?https://xdpmweb.free.nf/api';
 
 // Cấu hình headers định danh đây là luồng gọi API chuẩn để InfinityFree không chặn
 const apiConfig = {
