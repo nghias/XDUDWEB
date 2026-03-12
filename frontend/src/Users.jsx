@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BASE_API = import.meta.env.VITE_BASE_API || 'http://localhost:8000/api';
+const BASE_API = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
