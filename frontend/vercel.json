@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://xdpmweb.free.nf/api/:path*"
+      "destination": "https://xdudweb-php.onrender.com/api/:path*"
     },
     {
       "source": "/((?!api/).*)",

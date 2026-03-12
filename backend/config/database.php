@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +59,9 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => [
+                // Ép buộc dùng SSL và bỏ qua kiểm tra file path nếu không có
                 PDO::MYSQL_ATTR_SSL_CA => true,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, 
             ],
         ],
 
