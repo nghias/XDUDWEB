@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Gắn thêm link proxy vào ngay trước link InfinityFree của bạn
-const BASE_API = 'https://thingproxy.freeboard.io/fetch/https://xdpmweb.free.nf/api';
+const BASE_API = 'https://api.allorigins.win/raw?url=https://xdpmweb.free.nf/api';
 
 // Cấu hình headers định danh đây là luồng gọi API chuẩn để InfinityFree không chặn
 const apiConfig = {
