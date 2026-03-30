@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Users from './Users';
-
+import Home from './pages/user/Home';
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/users" />} />
-        <Route path="/users" element={<Users />} />
+              {/* Định nghĩa trang của Nghĩa tại "/user" */}
+      <Route path="/" element={<Navigate to="/user" />} />
+      <Route path="/user" element={<Home />} />
+       
       </Routes>
     </Router>
   );
