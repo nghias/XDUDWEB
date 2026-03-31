@@ -8,18 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('tin_nhan', function (Blueprint $table) {
+
             $table->id();
-            $table->unsignedBigInteger('sender_id');
-            $table->unsignedBigInteger('receiver_id');
-            $table->unsignedBigInteger('post_id');
-            $table->text('content');
+
+            $table->unsignedBigInteger('nguoi_gui_id');
+            $table->unsignedBigInteger('nguoi_nhan_id');
+
+            $table->text('noi_dung');
+
             $table->timestamps();
+
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('tin_nhan');
     }
 };

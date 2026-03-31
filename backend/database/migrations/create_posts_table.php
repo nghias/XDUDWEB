@@ -8,20 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('tin_dang', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->integer('price');
-            $table->integer('area');
-            $table->string('address');
-            $table->unsignedBigInteger('owner_id');
+
+            $table->string('tieu_de');
+            $table->text('mo_ta');
+
+            $table->integer('gia');
+            $table->integer('dien_tich');
+
+            $table->unsignedBigInteger('nguoi_dang_id');
+            $table->unsignedBigInteger('loai_phong_id');
+            $table->unsignedBigInteger('vi_tri_id');
+
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('tin_dang');
     }
 };
