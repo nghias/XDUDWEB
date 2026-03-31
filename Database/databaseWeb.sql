@@ -35,7 +35,7 @@ CREATE TABLE `cuoc_tro_chuyen` (
   CONSTRAINT `cuoc_tro_chuyen_ibfk_1` FOREIGN KEY (`ma_nguoi_tim_phong`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE,
   CONSTRAINT `cuoc_tro_chuyen_ibfk_2` FOREIGN KEY (`ma_chu_nha`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE,
   CONSTRAINT `cuoc_tro_chuyen_ibfk_3` FOREIGN KEY (`ma_tin_dang`) REFERENCES `tin_dang` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,6 +44,7 @@ CREATE TABLE `cuoc_tro_chuyen` (
 
 LOCK TABLES `cuoc_tro_chuyen` WRITE;
 /*!40000 ALTER TABLE `cuoc_tro_chuyen` DISABLE KEYS */;
+INSERT INTO `cuoc_tro_chuyen` VALUES (1,3,2,1,'2026-03-29 13:43:53');
 /*!40000 ALTER TABLE `cuoc_tro_chuyen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -61,7 +62,7 @@ CREATE TABLE `goi_dich_vu` (
   `thoi_han_ngay` int NOT NULL,
   `muc_uu_tien` int DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,6 +71,7 @@ CREATE TABLE `goi_dich_vu` (
 
 LOCK TABLES `goi_dich_vu` WRITE;
 /*!40000 ALTER TABLE `goi_dich_vu` DISABLE KEYS */;
+INSERT INTO `goi_dich_vu` VALUES (1,'Gói Cơ Bản',0.00,30,0),(2,'Gói VIP 1',500000.00,30,1),(3,'Gói VIP Đặc Quyền',1200000.00,30,2);
 /*!40000 ALTER TABLE `goi_dich_vu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,7 +90,7 @@ CREATE TABLE `hinh_anh_tin` (
   PRIMARY KEY (`id`),
   KEY `ma_tin_dang` (`ma_tin_dang`),
   CONSTRAINT `hinh_anh_tin_ibfk_1` FOREIGN KEY (`ma_tin_dang`) REFERENCES `tin_dang` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,6 +99,7 @@ CREATE TABLE `hinh_anh_tin` (
 
 LOCK TABLES `hinh_anh_tin` WRITE;
 /*!40000 ALTER TABLE `hinh_anh_tin` DISABLE KEYS */;
+INSERT INTO `hinh_anh_tin` VALUES (1,1,'/uploads/images/studio-q1-bia.jpg',1),(2,1,'/uploads/images/studio-q1-bep.jpg',0),(3,2,'/uploads/images/phong-tro-q5.jpg',1);
 /*!40000 ALTER TABLE `hinh_anh_tin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -119,7 +122,7 @@ CREATE TABLE `lich_su_mua_goi` (
   KEY `ma_goi` (`ma_goi`),
   CONSTRAINT `lich_su_mua_goi_ibfk_1` FOREIGN KEY (`ma_chu_nha`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE,
   CONSTRAINT `lich_su_mua_goi_ibfk_2` FOREIGN KEY (`ma_goi`) REFERENCES `goi_dich_vu` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,6 +131,7 @@ CREATE TABLE `lich_su_mua_goi` (
 
 LOCK TABLES `lich_su_mua_goi` WRITE;
 /*!40000 ALTER TABLE `lich_su_mua_goi` DISABLE KEYS */;
+INSERT INTO `lich_su_mua_goi` VALUES (1,2,2,'2026-03-29 13:44:09','2026-04-28 13:44:09','dang_hoat_dong');
 /*!40000 ALTER TABLE `lich_su_mua_goi` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,7 +146,7 @@ CREATE TABLE `loai_phong` (
   `id` int NOT NULL AUTO_INCREMENT,
   `ten_loai` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,6 +155,7 @@ CREATE TABLE `loai_phong` (
 
 LOCK TABLES `loai_phong` WRITE;
 /*!40000 ALTER TABLE `loai_phong` DISABLE KEYS */;
+INSERT INTO `loai_phong` VALUES (1,'Phòng trọ tiêu chuẩn'),(2,'Căn hộ mini (Studio)'),(3,'Chung cư nguyên căn'),(4,'Ký túc xá (Sleepbox)');
 /*!40000 ALTER TABLE `loai_phong` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +179,7 @@ CREATE TABLE `nguoi_dung` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `so_dien_thoai` (`so_dien_thoai`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,6 +188,7 @@ CREATE TABLE `nguoi_dung` (
 
 LOCK TABLES `nguoi_dung` WRITE;
 /*!40000 ALTER TABLE `nguoi_dung` DISABLE KEYS */;
+INSERT INTO `nguoi_dung` VALUES (1,'admin@gmail.com','123','Phạm Văn Nhật Nguyên','0901234567','quan_tri',NULL,'hoat_dong','2026-03-29 13:42:36'),(2,'tuannghia@gmail.com','123','Trần Tuấn Nghĩa','0912345678','chu_nha',NULL,'hoat_dong','2026-03-29 13:42:36'),(3,'trongnghia@gmail.com','123','Ngô Trọng Nghĩa','0987654321','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(4,'hoangphuoc@gmail.com','123','Đỗ Hoàng Phước','0908787912','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(5,'vankhang@gmail.com','123','Huỳnh Văn Khang','0985123225','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36');
 /*!40000 ALTER TABLE `nguoi_dung` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -198,7 +204,7 @@ CREATE TABLE `tien_ich` (
   `ten_tien_ich` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `bieu_tuong` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -207,6 +213,7 @@ CREATE TABLE `tien_ich` (
 
 LOCK TABLES `tien_ich` WRITE;
 /*!40000 ALTER TABLE `tien_ich` DISABLE KEYS */;
+INSERT INTO `tien_ich` VALUES (1,'Điều hòa','icon-ac.png'),(2,'Máy giặt','icon-washing.png'),(3,'WC Riêng','icon-wc.png'),(4,'Chỗ để xe','icon-parking.png'),(5,'Có gác lửng','icon-loft.png');
 /*!40000 ALTER TABLE `tien_ich` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,6 +240,7 @@ CREATE TABLE `tien_ich_tin_dang` (
 
 LOCK TABLES `tien_ich_tin_dang` WRITE;
 /*!40000 ALTER TABLE `tien_ich_tin_dang` DISABLE KEYS */;
+INSERT INTO `tien_ich_tin_dang` VALUES (1,1),(1,2),(1,3),(2,3),(2,4),(2,5);
 /*!40000 ALTER TABLE `tien_ich_tin_dang` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +267,7 @@ CREATE TABLE `tin_dang` (
   KEY `ma_loai_phong` (`ma_loai_phong`),
   CONSTRAINT `tin_dang_ibfk_1` FOREIGN KEY (`ma_chu_nha`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tin_dang_ibfk_2` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,6 +276,7 @@ CREATE TABLE `tin_dang` (
 
 LOCK TABLES `tin_dang` WRITE;
 /*!40000 ALTER TABLE `tin_dang` DISABLE KEYS */;
+INSERT INTO `tin_dang` VALUES (1,2,'Cho thuê Studio Full Nội Thất trung tâm Quận 1','Phòng mới xây, giờ giấc tự do, không chung chủ, full nội thất xách vali vào ở ngay.',5500000.00,25.50,2,'hoat_dong',150,'2026-03-29 13:43:09'),(2,2,'Phòng trọ giá rẻ cho sinh viên gần ĐH KHTN','Phòng thoáng mát, khu an ninh, có chỗ để xe miễn phí.',2500000.00,15.00,1,'hoat_dong',45,'2026-03-29 13:43:09');
 /*!40000 ALTER TABLE `tin_dang` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -295,6 +304,7 @@ CREATE TABLE `tin_dang_da_luu` (
 
 LOCK TABLES `tin_dang_da_luu` WRITE;
 /*!40000 ALTER TABLE `tin_dang_da_luu` DISABLE KEYS */;
+INSERT INTO `tin_dang_da_luu` VALUES (3,1,'2026-03-29 13:43:50');
 /*!40000 ALTER TABLE `tin_dang_da_luu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,7 +327,7 @@ CREATE TABLE `tin_nhan` (
   KEY `ma_nguoi_gui` (`ma_nguoi_gui`),
   CONSTRAINT `tin_nhan_ibfk_1` FOREIGN KEY (`ma_cuoc_tro_chuyen`) REFERENCES `cuoc_tro_chuyen` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tin_nhan_ibfk_2` FOREIGN KEY (`ma_nguoi_gui`) REFERENCES `nguoi_dung` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -326,6 +336,7 @@ CREATE TABLE `tin_nhan` (
 
 LOCK TABLES `tin_nhan` WRITE;
 /*!40000 ALTER TABLE `tin_nhan` DISABLE KEYS */;
+INSERT INTO `tin_nhan` VALUES (1,1,3,'Chào anh/chị, phòng Studio ở Quận 1 này còn không ạ?',1,'2026-03-29 13:43:56'),(2,1,2,'Chào bạn, phòng vẫn còn nhé. Bạn muốn qua xem lúc nào?',0,'2026-03-29 13:43:56');
 /*!40000 ALTER TABLE `tin_nhan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -356,6 +367,7 @@ CREATE TABLE `vi_tri` (
 
 LOCK TABLES `vi_tri` WRITE;
 /*!40000 ALTER TABLE `vi_tri` DISABLE KEYS */;
+INSERT INTO `vi_tri` VALUES (1,'Hồ Chí Minh','Quận 1','Phường Bến Nghé','Nguyễn Đình Chiểu','Số 12A, Ngõ 3',10.78502100,106.69894100),(2,'Hồ Chí Minh','Quận 5','Phường 4','Nguyễn Văn Cừ','Hẻm 227 Nguyễn Văn Cừ',10.76281700,106.68249800);
 /*!40000 ALTER TABLE `vi_tri` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -368,4 +380,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-26 14:45:13
+-- Dump completed on 2026-03-29 20:45:50
