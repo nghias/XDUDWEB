@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
+    protected $table = 'tin_nhan';
+
     protected $fillable = [
-        'sender_id',
-        'receiver_id',
-        'post_id',
-        'content'
+        'nguoi_gui_id',
+        'nguoi_nhan_id',
+        'noi_dung'
     ];
 }

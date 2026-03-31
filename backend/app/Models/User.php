@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    public $timestamps = false; // Tắt timestamp để đúng chuẩn bảng chỉ có id và name
-    protected $fillable = ['name'];
+    protected $table = 'nguoi_dung';
+
+    protected $fillable = [
+        'ten',
+        'email',
+        'mat_khau',
+        'so_dien_thoai'
+    ];
 }

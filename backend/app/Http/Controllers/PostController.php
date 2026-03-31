@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePostRequest;
+use Illuminate\Http\Request;
 use App\Models\Post;
 
 class PostController extends Controller
 {
-
     public function index()
     {
         return response()->json(Post::all());
@@ -21,7 +20,6 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $post = Post::create($request->all());
-
         return response()->json($post);
     }
 
@@ -44,5 +42,4 @@ class PostController extends Controller
 
         return response()->json(["message"=>"deleted"]);
     }
-
 }
