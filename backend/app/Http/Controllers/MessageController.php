@@ -31,16 +31,13 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nguoi_gui_id'=>'required|numeric',
-            'nguoi_nhan_id'=>'required|numeric',
-            'noi_dung'=>'required|string'
+            'sender_id'=>'required|numeric',
+            'receiver_id'=>'required|numeric',
+            'post_id'=>'required|numeric',
+            'content'=>'required|string'
         ]);
 
-        $message = Message::create([
-            'nguoi_gui_id'=>$request->nguoi_gui_id,
-            'nguoi_nhan_id'=>$request->nguoi_nhan_id,
-            'noi_dung'=>$request->noi_dung
-        ]);
+        $message = Message::create($request->all());
 
         return response()->json([
             "message"=>"Gửi tin nhắn thành công",
@@ -51,15 +48,7 @@ class MessageController extends Controller
     // DELETE /api/messages/{id}
     public function destroy($id)
     {
-        $message = Message::find($id);
-
-        if(!$message){
-            return response()->json([
-                "message"=>"Tin nhắn không tồn tại"
-            ],404);
-        }
-
-        $message->delete();
+        Message::destroy($id);
 
         return response()->json([
             "message"=>"Xóa tin nhắn thành công"

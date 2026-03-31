@@ -6,26 +6,29 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostRequest extends FormRequest
 {
-    /**
-     * Cho phép request này được sử dụng
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Các rule validate dữ liệu
-     */
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|integer|min:0',
-            'area' => 'required|integer|min:0',
-            'address' => 'required|string|max:255',
-            'owner_id' => 'required|integer'
+
+            'tieu_de' => 'required|string|max:255',
+
+            'mo_ta' => 'required|string',
+
+            'gia' => 'required|integer|min:0',
+
+            'dien_tich' => 'required|integer|min:0',
+
+            'nguoi_dang_id' => 'required|integer',
+
+            'loai_phong_id' => 'required|integer',
+
+            'vi_tri_id' => 'required|integer'
+
         ];
     }
 }

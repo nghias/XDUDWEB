@@ -8,9 +8,9 @@ Route::get('/', function () {
         "status" => "running",
         "server" => "Laravel on Render",
         "apis" => [
-            "posts" => "/api/posts",
+            "tin_dang" => "/api/tin_dang",
             "users" => "/api/users",
-            "messages" => "/api/messages"
+            "tin_nhan" => "/api/tin_nhan"
         ]
     ]);
 });

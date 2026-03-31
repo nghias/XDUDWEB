@@ -9,12 +9,16 @@ class Post extends Model
     protected $table = 'tin_dang';
 
     protected $fillable = [
+        'ma_chu_nha',
         'tieu_de',
         'mo_ta',
-        'gia',
+        'gia_thue',
         'dien_tich',
-        'nguoi_dang_id',
-        'loai_phong_id',
-        'vi_tri_id'
+        'ma_loai_phong',
+        'trang_thai',
+        'luot_xem',
+        'ngay_dang'
     ];
+
+    public $timestamps = false;
 }
