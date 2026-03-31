@@ -58,11 +58,9 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => [
-                // Ép buộc dùng SSL và bỏ qua kiểm tra file path nếu không có
-                PDO::MYSQL_ATTR_SSL_CA => true,
-                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, 
-            ],
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO\Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+            ]) : [],
         ],
 
         'mariadb' => [
