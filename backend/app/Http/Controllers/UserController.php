@@ -1,53 +1,78 @@
 <?php
-    namespace App\Http\Controllers;
 
-    use App\Http\Controllers\Controller;
-    use App\Models\User;
-    use Illuminate\Http\Request;
+namespace App\Http\Controllers;
 
-    class UserController extends Controller
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class UserController extends Controller
+{
+    // 1. Lấy danh sách tất cả người dùng
+    public function index()
     {
-        // READ: Lấy danh sách tất cả users (Khớp BASE_API/users)
-        public function index()
-        {
-            return response()->json(User::all());
-        }
-
-        // READ: Lấy 1 user (Khớp BASE_API/users/{id})
-        public function show($id)
-        {
-            $user = User::find($id);
-            if (!$user) return response()->json(['message' => 'Not found'], 404);
-            return response()->json($user);
-        }
-
-        // CREATE: Thêm mới user
-        public function store(Request $request)
-        {
-            $request->validate(['name' => 'required|string']);
-            $user = User::create(['name' => $request->name]);
-            return response()->json($user, 201);
-        }
-
-        // UPDATE: Sửa user
-        public function update(Request $request, $id)
-        {
-            $user = User::find($id);
-            if (!$user) return response()->json(['message' => 'Not found'], 404);
-            
-            $request->validate(['name' => 'required|string']);
-            $user->update(['name' => $request->name]);
-            return response()->json($user);
-        }
-
-        // DELETE: Xóa user
-        public function destroy($id)
-        {
-            $user = User::find($id);
-            if (!$user) return response()->json(['message' => 'Not found'], 404);
-            
-            $user->delete();
-            return response()->json(['message' => 'Deleted successfully']);
-        }
+        $users = User::all();
+        return response()->json($users, 200);
     }
-?>
+
+    // 2. Thêm mới một người dùng
+    public function store(Request $request)
+    {
+        // Bạn có thể thêm validate ở đây
+        $data = $request->all();
+        
+        // Mã hóa mật khẩu trước khi lưu
+        if(isset($data['mat_khau'])) {
+            $data['mat_khau'] = Hash::make($data['mat_khau']);
+        }
+        
+        // Tự động gán ngày tạo nếu chưa có
+        if(!isset($data['ngay_tao'])) {
+            $data['ngay_tao'] = now();
+        }
+
+        $user = User::create($data);
+        return response()->json(['message' => 'Tạo thành công', 'data' => $user], 201);
+    }
+
+    // 3. Lấy thông tin 1 người dùng cụ thể
+    public function show($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
+        }
+        return response()->json($user, 200);
+    }
+
+    // 4. Cập nhật thông tin
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
+        }
+
+        $data = $request->all();
+        
+        // Nếu có cập nhật mật khẩu thì mã hóa lại
+        if(isset($data['mat_khau'])) {
+            $data['mat_khau'] = Hash::make($data['mat_khau']);
+        }
+
+        $user->update($data);
+        return response()->json(['message' => 'Cập nhật thành công', 'data' => $user], 200);
+    }
+
+    // 5. Xóa người dùng
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
+        }
+
+        $user->delete();
+        return response()->json(['message' => 'Xóa thành công'], 200);
+    }
+}
