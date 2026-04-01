@@ -9,6 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tin_dang', function (Blueprint $table) {
+
             $table->id();
 
             $table->string('tieu_de');
@@ -17,9 +18,12 @@ return new class extends Migration
             $table->integer('gia');
             $table->integer('dien_tich');
 
-            $table->unsignedBigInteger('nguoi_dang_id');
-            $table->unsignedBigInteger('loai_phong_id');
-            $table->unsignedBigInteger('vi_tri_id');
+            // khóa ngoại
+            $table->foreignId('nguoi_dung_id')->constrained('nguoi_dung');
+
+            $table->foreignId('loai_phong_id')->constrained('loai_phong');
+
+            $table->foreignId('vi_tri_id')->constrained('vi_tri');
 
             $table->timestamps();
         });

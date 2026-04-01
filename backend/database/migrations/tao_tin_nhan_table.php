@@ -12,8 +12,17 @@ return new class extends Migration
 
             $table->id();
 
-            $table->unsignedBigInteger('nguoi_gui_id');
-            $table->unsignedBigInteger('nguoi_nhan_id');
+            // người gửi
+            $table->foreignId('nguoi_gui_id')
+                  ->constrained('nguoi_dung');
+
+            // người nhận
+            $table->foreignId('nguoi_nhan_id')
+                  ->constrained('nguoi_dung');
+
+            // bài đăng liên quan
+            $table->foreignId('tin_dang_id')
+                  ->constrained('tin_dang');
 
             $table->text('noi_dung');
 
