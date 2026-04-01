@@ -1,10 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\TinDangController;
+=======
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
+>>>>>>> befe4928b04e4e07ebd2540c09c83b4e16599f1f
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +22,7 @@ use App\Http\Controllers\TinDangController;
 Route::post('/dang-ky',[AuthController::class,'dangKy']);
 Route::post('/dang-nhap',[AuthController::class,'dangNhap']);
 
+<<<<<<< HEAD
 
 /*
 |--------------------------------------------------------------------------
@@ -98,3 +106,14 @@ Route::delete('/xoa-tin-nhan/{id}',
 Route::get('/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
     [TinNhanController::class,'cuocTroChuyen']
 );
+=======
+ be-user
+Route::get('/messages',[MessageController::class,'index']);
+Route::post('/messages',[MessageController::class,'store']);
+
+Route::post('/messages', [MessageController::class, 'send']);
+Route::get('/messages/{user_id}', [MessageController::class, 'getMessages']);
+
+Route::apiResource('nguoi-dung', UserController::class);
+ main
+>>>>>>> befe4928b04e4e07ebd2540c09c83b4e16599f1f
