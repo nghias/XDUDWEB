@@ -3,6 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+ be-user
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        return response()->json(User::all());
+    }
+
+    public function show($id)
+    {
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json([
+                "message"=>"User không tồn tại"
+            ],404);
+        }
+
+        return response()->json($user);
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -74,5 +95,6 @@ class UserController extends Controller
 
         $user->delete();
         return response()->json(['message' => 'Xóa thành công'], 200);
+ main
     }
 }
