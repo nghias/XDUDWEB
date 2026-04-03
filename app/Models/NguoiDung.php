@@ -7,31 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class NguoiDung extends Model
 {
-be-user
-    protected $table = "nguoi_dung";
-
-    protected $fillable = [
-        "ten",
-        "email",
-<<<<<<< HEAD:backend/app/Models/NguoiDung.php
-        "mat_khau"
-    ];
-
-    protected $hidden = [
-        "mat_khau"
-=======
-        "mat_khau",
-        "so_dien_thoai"
-
     use HasFactory;
 
-    // Chỉ định chính xác tên bảng
+    // Tên bảng trong database
     protected $table = 'nguoi_dung';
 
-    // Tắt timestamps mặc định của Laravel vì bạn dùng 'ngay_tao' thay vì 'created_at'/'updated_at'
-    public $timestamps = false; 
+    // Không dùng created_at / updated_at
+    public $timestamps = false;
 
-    // Các trường được phép thêm/sửa (mass assignment)
+    // Các cột cho phép insert/update
     protected $fillable = [
         'email',
         'mat_khau',
@@ -41,7 +25,10 @@ be-user
         'anh_dai_dien',
         'trang_thai',
         'ngay_tao'
-main
->>>>>>> befe4928b04e4e07ebd2540c09c83b4e16599f1f:backend/app/Models/User.php
+    ];
+
+    // Các cột không trả về API
+    protected $hidden = [
+        'mat_khau'
     ];
 }
