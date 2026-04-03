@@ -68,38 +68,39 @@ const Login = () => {
     };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.formCard}>
-                <h2 style={styles.title}>Đăng Nhập</h2>
+        // Dùng Bootstrap để căn giữa toàn màn hình
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-light w-100">
+            <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}>
+                <h2 className="text-center mb-4 text-dark">Đăng Nhập</h2>
                 
-                {error && <div style={styles.error}>{error}</div>}
+                {error && <div className="alert alert-danger text-center p-2 mb-3">{error}</div>}
 
-                <form onSubmit={handleLogin} style={styles.form}>
-                    <div style={styles.inputGroup}>
-                        <label>Tài khoản (Email):</label>
+                <form onSubmit={handleLogin} className="d-flex flex-column">
+                    <div className="mb-3">
+                        <label className="form-label">Tài khoản (Email):</label>
                         <input 
                             type="text" 
+                            className="form-control"
                             value={tenTK}
                             onChange={(e) => setTenTK(e.target.value)}
                             required
-                            style={styles.input}
                             placeholder="Nhập email của bạn"
                         />
                     </div>
 
-                    <div style={styles.inputGroup}>
-                        <label>Mật khẩu:</label>
+                    <div className="mb-4">
+                        <label className="form-label">Mật khẩu:</label>
                         <input 
                             type="password" 
+                            className="form-control"
                             value={matKhau}
                             onChange={(e) => setMatKhau(e.target.value)}
                             required
-                            style={styles.input}
                             placeholder="Nhập mật khẩu"
                         />
                     </div>
 
-                    <button type="submit" disabled={isLoading} style={styles.button}>
+                    <button type="submit" disabled={isLoading} className="btn btn-primary w-100 fw-bold py-2">
                         {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
                     </button>
                 </form>
@@ -108,16 +109,16 @@ const Login = () => {
     );
 };
 
-// CSS in JS cơ bản (Bạn có thể chuyển sang file .css riêng hoặc dùng Tailwind)
 const styles = {
-    container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f3f4f6' },
-    formCard: { padding: '30px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' },
-    title: { textAlign: 'center', marginBottom: '20px', color: '#333' },
-    form: { display: 'flex', flexDirection: 'column' },
-    inputGroup: { marginBottom: '15px' },
-    input: { width: '100%', padding: '10px', marginTop: '5px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' },
-    button: { padding: '10px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' },
-    error: { color: 'red', marginBottom: '15px', textAlign: 'center', backgroundColor: '#fee2e2', padding: '10px', borderRadius: '4px' }
+    container: { 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh', 
+        width: '100vw', /* THÊM DÒNG NÀY ĐỂ MỞ RỘNG TOÀN MÀN HÌNH */
+        backgroundColor: '#f3f4f6' 
+    },
+    // ... giữ nguyên các phần còn lại
 };
 
 export default Login;
