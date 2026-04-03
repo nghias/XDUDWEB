@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 // Đảm bảo đường dẫn import component con chính xác với cấu trúc thư mục của bạn
-import StatCard from "../../components/admin/StatCard";
-import ActivityItem from "../../components/admin/ActivityItem";
+import StatCard from "../../page/admin/posts/SystemStatus";
+import ActivityItem from "../../page/admin/posts/ActivityItem";
 // import SystemStatusItem from "../../components/admin/SystemStatus"; // Đã import nhưng chưa dùng tới
 
 const SystemStats = () => {

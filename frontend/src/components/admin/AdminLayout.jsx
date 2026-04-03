@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
-// Import file CSS (Bạn cần tạo file AdminLayout.css và dán đoạn style scoped vào đó)
-import "./AdminLayout.css";
+
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -93,9 +92,11 @@ const AdminLayout = () => {
   return (
     <div className="d-flex min-vh-100 bg-gray-100">
       {/* Sidebar */}
-      <div className="bg-gradient-danger text-white d-flex flex-column" style={{ width: "280px" }}>
+     {/* Code mới đã sửa */}
+<div className="bg-danger text-white d-flex flex-column flex-shrink-0" style={{ width: "280px", minHeight: "100vh" }}>
         <div className="p-4 text-center border-bottom border-light">
           <h3 className="mb-0 fw-bold">ADMIN THUETRO.VN</h3>
+          
         </div>
         <nav className="flex-grow-1 p-3">
           <ul className="nav flex-column gap-2">
