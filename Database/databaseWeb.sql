@@ -188,8 +188,33 @@ CREATE TABLE `nguoi_dung` (
 
 LOCK TABLES `nguoi_dung` WRITE;
 /*!40000 ALTER TABLE `nguoi_dung` DISABLE KEYS */;
-INSERT INTO `nguoi_dung` VALUES (1,'admin@gmail.com','123','Phạm Văn Nhật Nguyên','0901234567','quan_tri',NULL,'hoat_dong','2026-03-29 13:42:36'),(2,'tuannghia@gmail.com','123','Trần Tuấn Nghĩa','0912345678','chu_nha',NULL,'hoat_dong','2026-03-29 13:42:36'),(3,'trongnghia@gmail.com','123','Ngô Trọng Nghĩa','0987654321','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(4,'hoangphuoc@gmail.com','123','Đỗ Hoàng Phước','0908787912','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(5,'vankhang@gmail.com','123','Huỳnh Văn Khang','0985123225','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36');
+INSERT INTO `nguoi_dung` VALUES (1,'admin@gmail.com','$2y$12$yl4dQ2N60ibard97Z6p9LOOuFFLQRKRbbulO/AM5SI9b7qCwS2RMO','Phạm Văn Nhật Nguyên','0901234567','quan_tri',NULL,'hoat_dong','2026-03-29 13:42:36'),(2,'tuannghia@gmail.com','$2y$12$yl4dQ2N60ibard97Z6p9LOOuFFLQRKRbbulO/AM5SI9b7qCwS2RMO','Trần Tuấn Nghĩa','0912345678','chu_nha',NULL,'hoat_dong','2026-03-29 13:42:36'),(3,'trongnghia@gmail.com','$2y$12$yl4dQ2N60ibard97Z6p9LOOuFFLQRKRbbulO/AM5SI9b7qCwS2RMO','Ngô Trọng Nghĩa','0987654321','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(4,'hoangphuoc@gmail.com','$2y$12$L55MMhlnT.4KbT03WPGkFuk/rSqq2Nw34FFX6MITk8m3h7Lasl8uG','Đỗ Hoàng Phước','0908787912','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36'),(5,'vankhang@gmail.com','$2y$12$yl4dQ2N60ibard97Z6p9LOOuFFLQRKRbbulO/AM5SI9b7qCwS2RMO','Huỳnh Văn Khang','0985123225','nguoi_tim_phong',NULL,'hoat_dong','2026-03-29 13:42:36');
 /*!40000 ALTER TABLE `nguoi_dung` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `quen_mat_khau`
+--
+
+DROP TABLE IF EXISTS `quen_mat_khau`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `quen_mat_khau` (
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ngay_tao` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `quen_mat_khau_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quen_mat_khau`
+--
+
+LOCK TABLES `quen_mat_khau` WRITE;
+/*!40000 ALTER TABLE `quen_mat_khau` DISABLE KEYS */;
+INSERT INTO `quen_mat_khau` VALUES ('hoangphuoc@gmail.com','YGs9WcDrfCxbCUrYvTL4hbjRM0YRmkKvrMfQ61eLtf5cCCBRnvu0zEhfLuA3','2026-04-03 21:59:46');
+/*!40000 ALTER TABLE `quen_mat_khau` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -341,6 +366,39 @@ INSERT INTO `tin_nhan` VALUES (1,1,3,'Chào anh/chị, phòng Studio ở Quận 
 UNLOCK TABLES;
 
 --
+-- Table structure for table `token_ca_nhan`
+--
+
+DROP TABLE IF EXISTS `token_ca_nhan`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `token_ca_nhan` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint unsigned NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token_ca_nhan_token_unique` (`token`),
+  KEY `token_ca_nhan_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `token_ca_nhan`
+--
+
+LOCK TABLES `token_ca_nhan` WRITE;
+/*!40000 ALTER TABLE `token_ca_nhan` DISABLE KEYS */;
+/*!40000 ALTER TABLE `token_ca_nhan` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `vi_tri`
 --
 
@@ -380,4 +438,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-29 20:45:50
+-- Dump completed on 2026-04-04 12:29:39

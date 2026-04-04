@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\TinDangController;
@@ -13,6 +18,21 @@ Route::get('/chi-tiet-tin-dang/{id}',
     [TinDangController::class,'chiTietTinDang']
 );
 
+Route::apiResource('nguoi-dung', UserController::class);
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/tao-tin-dang',
     [TinDangController::class,'taoTinDang']
 );

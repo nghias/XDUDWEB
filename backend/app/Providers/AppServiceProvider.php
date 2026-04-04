@@ -3,17 +3,15 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
+use Laravel\Sanctum\Sanctum;
+use App\Models\TokenCaNhan;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
     public function boot(): void
     {
-        Schema::defaultStringLength(191);
+        Sanctum::usePersonalAccessTokenModel(TokenCaNhan::class);
     }
 }
