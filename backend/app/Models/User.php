@@ -3,27 +3,38 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    // Chỉ định chính xác tên bảng
+    // 1. Chỉ định tên bảng tiếng Việt
     protected $table = 'nguoi_dung';
 
-    // Tắt timestamps mặc định của Laravel vì bạn dùng 'ngay_tao' thay vì 'created_at'/'updated_at'
-    public $timestamps = false; 
+    public $timestamps = false;
 
-    // Các trường được phép thêm/sửa (mass assignment)
+    // 2. Khai báo các cột được phép thêm dữ liệu
     protected $fillable = [
+        'ho_ten',
         'email',
         'mat_khau',
-        'ho_ten',
         'so_dien_thoai',
         'vai_tro',
-        'anh_dai_dien',
         'trang_thai',
-        'ngay_tao'
+        'anh_dai_dien',
     ];
+
+    // 3. Ẩn cột mật khẩu khi trả dữ liệu về cho Frontend (Bảo mật)
+    protected $hidden = [
+        'mat_khau',
+    ];
+
+    // 4. Báo cho Laravel biết cột mật khẩu của ta tên là 'mat_khau'
+    public function getAuthPassword()
+    {
+        return $this->mat_khau;
+    }
 }
