@@ -1,0 +1,20 @@
+/* Login.css */
+
+/* Đảm bảo không có lề mặc định trên thẻ body hoặc html làm ảnh hưởng đến căn giữa */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* Kiểu cho container đăng nhập để chiếm toàn bộ viewport một cách triệt để */
+.login-full-screen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;  /* Chiếm toàn bộ chiều rộng viewport */
+  height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
+  background-color: #f3f4f6; /* Màu nền nhẹ của trang */
+  margin: 0;      /* Chắc chắn không có lề ngoài */
+}

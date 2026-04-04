@@ -1,13 +1,86 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './pages/user/Home';
+//bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// GENERAL
+import Login from './page/general/Login';
+
+// USER
+import Home from './page/user/Home';
+
+// ADMIN
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './components/admin/Admindashboard';
+import UserManagement from './components/admin/UserManagement';
+import AdminPost from './components/admin/AdminPost';
+import PackageAdmin from './components/admin/PackageAdmin';
+import SystemStats from './components/admin/SystemStats';
+
+// Component kiểm tra quyền truy cập (Bảo vệ Route)
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const session = localStorage.getItem('user_session');
+  
+  // Chưa đăng nhập thì đá về trang đăng nhập
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const userData = JSON.parse(session);
+  
+  // Đã đăng nhập nhưng không có quyền truy cập route này
+  if (allowedRoles && !allowedRoles.includes(userData.vai_tro)) {
+    // Tự động điều hướng về đúng không gian làm việc của role đó
+    if (userData.vai_tro === 'quan_tri') return <Navigate to="/admin" replace />;
+    return <Navigate to="/user" replace />; 
+  }
+
+  // Hợp lệ thì cho phép render component con
+  return children;
+};
+
 function App() {
   return (
     <Router>
       <Routes>
-              {/* Định nghĩa trang của Nghĩa tại "/user" */}
-      <Route path="/" element={<Navigate to="/user" />} />
-      <Route path="/user" element={<Home />} />
-       
+
+        {/* --- XÁC THỰC --- */}
+        {/* Truy cập link host sẽ tự động điều hướng sang login */}
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* --- USER --- */}
+        <Route 
+          path="/user" 
+          element={
+            // Cho phép người tìm phòng (và có thể cả chủ nhà) truy cập /user
+            <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha']}>
+              <Home />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* --- ADMIN --- */}
+        <Route 
+          path="/admin" 
+          element={
+            // Chỉ cho phép admin truy cập cụm route này
+            <ProtectedRoute allowedRoles={['quan_tri']}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="posts" element={<AdminPost />} />
+          <Route path="packages" element={<PackageAdmin />} />
+          <Route path="stats" element={<SystemStats />} />
+        </Route>
+
+        {/* --- NOT FOUND --- */}
+        <Route path="*" element={<h1>404 Not Found</h1>} />
+
       </Routes>
     </Router>
   );

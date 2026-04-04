@@ -71,7 +71,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // 1. Hàm gửi link về email
+    // Hàm gửi link về email
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -100,7 +100,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Link đổi mật khẩu đã được gửi vào Email của bạn!']);
     }
 
-    // 2. Hàm đặt lại mật khẩu mới
+    // Hàm đặt lại mật khẩu mới
     public function resetPassword(Request $request)
     {
         $request->validate([
