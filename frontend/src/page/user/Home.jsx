@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MapPin, Search, Home, DollarSign, Navigation } from "lucide-react";
 
 const HomeView = () => {
-  // Mock data dựa trên đúng bảng 'posts' trong Database của nhóm Nghĩa
+  // Mock data dựa trên đúng bảng 'posts' trong Database
   const [rooms] = useState([
     {
       id: 1,
@@ -10,8 +10,7 @@ const HomeView = () => {
       price: 2500000,
       address: "180 Cao Lỗ, Quận 8",
       area: 20,
-      image:
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500",
+      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500",
     },
     {
       id: 2,
@@ -19,8 +18,7 @@ const HomeView = () => {
       price: 5000000,
       address: "Đường Tôn Đản, Quận 4",
       area: 35,
-      image:
-        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500",
+      image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500",
     },
     {
       id: 3,
@@ -28,83 +26,98 @@ const HomeView = () => {
       price: 3200000,
       address: "Dương Bá Trạc, Quận 8",
       area: 25,
-      image:
-        "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=500",
+      image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=500",
     },
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header đơn giản */}
-      <header className="bg-blue-600 text-white p-6 shadow-lg">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
+    <div className="bg-light pb-5">
+      {/* Banner & Thanh tìm kiếm */}
+      <div className="bg-primary text-white py-4 shadow-sm mb-5">
+        <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+          <div className="d-flex align-items-center mb-3 mb-md-0 gap-2">
             <Home size={28} />
-            <h1 className="text-2xl font-bold text-white uppercase">
-              STU Accommodation
-            </h1>
+            <h2 className="h4 mb-0 fw-bold text-uppercase">STU Accommodation</h2>
           </div>
-          <div className="hidden md:flex bg-white rounded-full px-4 py-2 items-center gap-2 text-gray-500">
-            <Search size={18} />
+          
+          <div className="bg-white rounded-pill px-3 py-2 d-flex align-items-center shadow-sm w-100" style={{ maxWidth: '400px' }}>
+            <Search size={18} className="text-secondary me-2" />
             <input
               type="text"
               placeholder="Tìm quận, tên đường..."
-              className="outline-none text-sm w-64"
+              className="border-0 w-100 outline-none"
+              style={{ boxShadow: 'none', outline: 'none' }}
             />
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-          <Navigation size={20} className="text-blue-600" />
+      <main className="container">
+        <h3 className="h5 fw-bold text-dark mb-4 d-flex align-items-center gap-2">
+          <Navigation size={22} className="text-primary" />
           Phòng trọ nổi bật quanh khu vực của bạn
-        </h2>
+        </h3>
 
-        {/* Grid danh sách phòng */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Grid danh sách phòng dùng Bootstrap Row/Col */}
+        <div className="row g-4">
           {rooms.map((room) => (
-            <div
-              key={room.id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all"
-            >
-              <img
-                src={room.image}
-                alt={room.title}
-                className="w-full h-48 object-cover"
-              />
+            <div key={room.id} className="col-12 col-md-6 col-lg-4">
+              <div className="card h-100 shadow-sm border-0 rounded-4 overflow-hidden custom-card-hover">
+                
+                {/* Ảnh phòng trọ */}
+                <img
+                  src={room.image}
+                  alt={room.title}
+                  className="card-img-top"
+                  style={{ height: '220px', objectFit: 'cover' }}
+                />
 
-              <div className="p-4">
-                <h3 className="font-bold text-gray-800 text-lg line-clamp-1">
-                  {room.title}
-                </h3>
+                <div className="card-body d-flex flex-column">
+                  {/* Tiêu đề */}
+                  <h5 className="card-title fw-bold text-dark text-truncate" title={room.title}>
+                    {room.title}
+                  </h5>
 
-                <div className="flex items-center text-gray-500 mt-2 text-sm">
-                  <MapPin size={14} className="mr-1 text-red-500" />
-                  {room.address}
-                </div>
-
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-50">
-                  <div className="flex items-center text-blue-700 font-bold text-lg">
-                    <DollarSign size={16} />
-                    {(room.price / 1000000).toFixed(1)} triệu/tháng
+                  {/* Địa chỉ */}
+                  <div className="d-flex align-items-center text-secondary small mb-3">
+                    <MapPin size={16} className="text-danger me-1 flex-shrink-0" />
+                    <span className="text-truncate">{room.address}</span>
                   </div>
-                  <span className="text-gray-400 text-sm">{room.area} m²</span>
-                </div>
 
-                <button className="w-full mt-4 bg-gray-900 text-white py-2.5 rounded-xl font-medium hover:bg-blue-600 transition-colors">
-                  Xem chi tiết
-                </button>
+                  {/* Giá và Diện tích */}
+                  <div className="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                    <div className="text-primary fw-bold fs-5 d-flex align-items-center">
+                      <DollarSign size={18} />
+                      {(room.price / 1000000).toFixed(1)} triệu/tháng
+                    </div>
+                    <span className="text-muted small">{room.area} m²</span>
+                  </div>
+
+                  {/* Nút xem chi tiết */}
+                  <button className="btn btn-dark w-100 mt-3 py-2 rounded-3 fw-medium">
+                    Xem chi tiết
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </main>
 
-      <footer className="text-center py-10 text-gray-400 text-sm">
-        © 2026 - Dự án Website Đặt Phòng Trọ - Nhóm Nghĩa & Khang
-      </footer>
+      {/* CSS tùy chỉnh nhỏ cho hiệu ứng hover card */}
+      <style>{`
+        .custom-card-hover {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .custom-card-hover:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        .outline-none:focus {
+          outline: none;
+        }
+      `}</style>
     </div>
   );
 };
