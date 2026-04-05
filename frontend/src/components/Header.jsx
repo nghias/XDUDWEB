@@ -4,21 +4,20 @@ import { Link, useNavigate } from 'react-router-dom';
 const Header = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false); // Thêm state xử lý loading
     const dropdownRef = useRef(null);
 
     // Lấy thông tin user từ localStorage
     const userSession = localStorage.getItem('user_session');
     const userData = userSession ? JSON.parse(userSession) : null;
 
-    // Ảnh mặc định (Nếu null, tự tạo ảnh có chữ cái đầu của tên, hoặc dùng 1 icon mặc định)
     const defaultAvatar = userData?.ho_ten 
         ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ho_ten)}&background=0D8ABC&color=fff` 
-        : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'; // Ảnh user xám mặc định
+        : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
 
-    // Link logo mặc định (Icon ngôi nhà)
     const logoUrl = 'https://cdn-icons-png.flaticon.com/512/1946/1946436.png';
 
-    // Xử lý click ra ngoài để đóng dropdown
+    // Đóng dropdown khi click ra ngoài
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -29,13 +28,14 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Hàm xử lý đăng xuất
+    // HÀM ĐĂNG XUẤT ĐÃ ĐƯỢC TỐI ƯU
     const handleLogout = async () => {
+        setIsLoggingOut(true); // Bật trạng thái loading
         const token = localStorage.getItem('auth_token');
         
-        // 1. Gọi API Backend để hủy token Sanctum (như trong ảnh bạn cung cấp)
-        if (token) {
-            try {
+        try {
+            // Cố gắng gọi API báo cho backend xóa token (nếu có mạng và server chạy)
+            if (token) {
                 await fetch('https://xdudweb-php.onrender.com/api/logout', {
                     method: 'POST',
                     headers: {
@@ -43,30 +43,31 @@ const Header = () => {
                         'Accept': 'application/json',
                     }
                 });
-            } catch (error) {
-                console.error("Lỗi khi gọi API đăng xuất:", error);
             }
+        } catch (error) {
+            console.error("Lỗi khi gọi API đăng xuất:", error);
+            // Kệ lỗi mạng, cứ tiến hành đăng xuất ở dưới
+        } finally {
+            // Khối FINALLY luôn chạy cho dù API có lỗi hay chạy chậm
+            localStorage.removeItem('user_session');
+            localStorage.removeItem('auth_token');
+            setIsLoggingOut(false);
+            
+            // Đóng dropdown, thông báo và chuyển hướng
+            setIsDropdownOpen(false);
+            alert('Đã đăng xuất thành công!');
+            navigate('/login');
         }
-
-        // 2. Xóa sạch LocalStorage / Session
-        localStorage.removeItem('user_session');
-        localStorage.removeItem('auth_token');
-
-        // 3. Thông báo và chuyển hướng
-        alert('Đã đăng xuất thành công và hủy Token!');
-        navigate('/login');
     };
 
     return (
         <header className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
             <div className="container">
-                {/* BÊN TRÁI: Logo */}
-                <Link to="/" className="navbar-brand d-flex align-items-center gap-2">
+                <Link to="/user" className="navbar-brand d-flex align-items-center gap-2">
                     <img src={logoUrl} alt="Logo" width="40" height="40" />
                     <span className="fw-bold text-primary">Tìm Trọ Trực Tuyến</span>
                 </Link>
 
-                {/* GIỮA: Các chức năng (tạm thời) */}
                 <div className="collapse navbar-collapse justify-content-center">
                     <ul className="navbar-nav">
                         <li className="nav-item">
@@ -81,7 +82,6 @@ const Header = () => {
                     </ul>
                 </div>
 
-                {/* BÊN PHẢI: Avatar và Dropdown */}
                 <div className="d-flex align-items-center" ref={dropdownRef}>
                     {userData ? (
                         <div className="dropdown">
@@ -101,7 +101,6 @@ const Header = () => {
                                 />
                             </div>
                             
-                            {/* Menu Dropdown */}
                             {isDropdownOpen && (
                                 <ul className="dropdown-menu dropdown-menu-end show shadow-sm" style={{ position: 'absolute', top: '100%', right: '0', marginTop: '10px' }}>
                                     <li><Link className="dropdown-item" to="/profile">Thông tin cá nhân</Link></li>
@@ -109,8 +108,13 @@ const Header = () => {
                                     <li><Link className="dropdown-item" to="/change-password">Đổi mật khẩu</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li>
-                                        <button className="dropdown-item text-danger fw-bold" onClick={handleLogout}>
-                                            Đăng xuất
+                                        {/* Nút đăng xuất vô hiệu hóa và đổi chữ khi đang xử lý */}
+                                        <button 
+                                            className="dropdown-item text-danger fw-bold" 
+                                            onClick={handleLogout}
+                                            disabled={isLoggingOut}
+                                        >
+                                            {isLoggingOut ? 'Đang xử lý...' : 'Đăng xuất'}
                                         </button>
                                     </li>
                                 </ul>
