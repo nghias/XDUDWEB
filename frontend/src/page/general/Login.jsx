@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css'; 
+import { useNavigate, Link } from 'react-router-dom'; // Thêm Link để chuyển trang
+import './Login.css';
 
 const Login = () => {
-    // Đổi tên state thành email để khớp 100% với backend
-    const [email, setEmail] = useState(''); 
+    const [email, setEmail] = useState('');
     const [matKhau, setMatKhau] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State quản lý xem/ẩn mật khẩu
     const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState(''); // Thêm state quản lý thông báo thành công
+    const [successMsg, setSuccessMsg] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -44,9 +44,8 @@ const Login = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json' // Giúp Laravel biết đây là API để trả về JSON khi có lỗi validate
+                    'Accept': 'application/json'
                 },
-                // Gửi đúng key 'email' và 'mat_khau' mà backend đang đọc
                 body: JSON.stringify({ 
                     email: email, 
                     mat_khau: matKhau 
@@ -55,81 +54,104 @@ const Login = () => {
 
             const result = await response.json();
 
-            // Nếu HTTP status trả về là ok (200) và success = true
             if (response.ok && result.success) {
                 localStorage.setItem('user_session', JSON.stringify(result.data));
-                localStorage.setItem('auth_token', result.token); // Lưu token như backend đã tạo
+                localStorage.setItem('auth_token', result.token);
                 
-                // Hiển thị thông báo thành công từ backend
-                setSuccessMsg(result.message); 
+                setSuccessMsg(result.message || 'Đăng nhập thành công!');
                 
-                // Dừng 1.5 giây cho người dùng thấy thông báo rồi mới chuyển trang
                 setTimeout(() => {
                     redirectByRole(result.data.vai_tro);
                 }, 1500);
 
             } else {
-                // Xử lý các trường hợp thất bại
-                if (response.status === 422) {
-                    // Lỗi Validate do Laravel tự sinh ra (chưa nhập email, pass quá ngắn...)
+                if (response.status === 422 && result.errors) {
                     const firstErrorKey = Object.keys(result.errors)[0];
                     setError(result.errors[firstErrorKey][0]);
                 } else {
-                    // Lỗi do backend tự định nghĩa (Sai email/pass, Tài khoản bị khóa)
-                    setError(result.message || 'Đăng nhập thất bại. Vui lòng thử lại!');
+                    setError(result.message || 'Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!');
                 }
             }
         } catch (err) {
             setError('Lỗi kết nối đến server. Vui lòng kiểm tra lại mạng hoặc thử lại sau.');
-            console.error("Login Error:", err);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="login-full-screen-container">
-            <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}>
-                <h2 className="text-center mb-4 text-dark">Đăng Nhập</h2>
+        <div className="login-full-screen-container bg-light d-flex justify-content-center align-items-center min-vh-100">
+            <div className="card p-4 shadow-sm border-0" style={{ width: '100%', maxWidth: '420px', borderRadius: '12px' }}>
+                <h2 className="text-center mb-4 text-dark fw-bold">Đăng Nhập</h2>
                 
-                {/* Khu vực hiển thị thông báo */}
                 {error && <div className="alert alert-danger text-center p-2 mb-3">{error}</div>}
                 {successMsg && <div className="alert alert-success text-center p-2 mb-3">{successMsg}</div>}
 
                 <form onSubmit={handleLogin} className="d-flex flex-column">
+                    {/* Input Email */}
                     <div className="mb-3">
-                        <label className="form-label">Tài khoản (Email):</label>
+                        <label className="form-label text-secondary fw-medium">Tài khoản (Email):</label>
                         <input 
                             type="email" 
-                            className="form-control"
+                            className="form-control py-2"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             placeholder="Nhập email của bạn"
-                            disabled={isLoading || successMsg} // Khóa input khi đang xử lý hoặc đã thành công
+                            disabled={isLoading || successMsg}
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label className="form-label">Mật khẩu:</label>
-                        <input 
-                            type="password" 
-                            className="form-control"
-                            value={matKhau}
-                            onChange={(e) => setMatKhau(e.target.value)}
-                            required
-                            placeholder="Nhập mật khẩu"
-                            disabled={isLoading || successMsg} 
-                        />
+                    {/* Input Mật khẩu có nút Xem/Ẩn */}
+                    <div className="mb-2">
+                        <label className="form-label text-secondary fw-medium">Mật khẩu:</label>
+                        <div className="input-group">
+                            <input 
+                                type={showPassword ? "text" : "password"} 
+                                className="form-control py-2"
+                                value={matKhau}
+                                onChange={(e) => setMatKhau(e.target.value)}
+                                required
+                                placeholder="Nhập mật khẩu"
+                                disabled={isLoading || successMsg}
+                            />
+                            <button 
+                                type="button" 
+                                className="btn btn-outline-secondary px-3"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLoading || successMsg}
+                                tabIndex="-1" // Không focus vào nút này khi bấm Tab
+                            >
+                                {/* Dùng icon Bootstrap để hiển thị mắt mở/đóng */}
+                                <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+                            </button>
+                        </div>
                     </div>
 
+                    {/* Quên mật khẩu */}
+                    <div className="d-flex justify-content-end mb-4">
+                        <Link to="/forgot-password" className="text-decoration-none text-primary small fw-medium">
+                            Quên mật khẩu?
+                        </Link>
+                    </div>
+
+                    {/* Nút Đăng nhập */}
                     <button 
                         type="submit" 
                         disabled={isLoading || successMsg} 
                         className={`btn w-100 fw-bold py-2 ${successMsg ? 'btn-success' : 'btn-primary'}`}
+                        style={{ borderRadius: '8px' }}
                     >
                         {isLoading ? 'Đang xử lý...' : (successMsg ? 'Đang chuyển hướng...' : 'Đăng nhập')}
                     </button>
+
+                    {/* Đăng ký */}
+                    <div className="text-center mt-4 pt-3 border-top">
+                        <span className="text-muted small">Bạn chưa có tài khoản? </span>
+                        <Link to="/register" className="text-decoration-none text-primary fw-bold small">
+                            Đăng ký ngay
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>
