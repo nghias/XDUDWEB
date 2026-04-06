@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+// === TẠO DỮ LIỆU GIẢ (MOCK DATA) ===
+// Dữ liệu này mô phỏng cấu trúc trả về từ Backend
+const mockUsersData = [
+  { user_id: 1, full_name: "Nguyễn Văn Admin", email: "admin@gmail.com", phone: "0901234567", role: "admin", is_blocked: false, created_at: "2023-10-01T10:00:00Z" },
+  { user_id: 2, full_name: "Trần Thị Chủ Trọ", email: "chutro@gmail.com", phone: "0912345678", role: "landlord", is_blocked: false, created_at: "2023-11-15T14:30:00Z" },
+  { user_id: 3, full_name: "Lê Văn Khách Thuê", email: "khachthue@gmail.com", phone: "0923456789", role: "renter", is_blocked: false, created_at: "2024-01-20T08:15:00Z" },
+  { user_id: 4, full_name: "Phạm Thị Khách Bị Khóa", email: "baduser@gmail.com", phone: "0934567890", role: "renter", is_blocked: true, created_at: "2024-02-10T16:45:00Z" },
+];
+
 const UserManagement = () => {
   // === STATE ===
   const [users, setUsers] = useState([]);
@@ -17,13 +26,20 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/admin/users");
-      setUsers(res.data || []);
+      // 🛑 TẠM ẨN GỌI API THẬT KHI CHƯA CÓ BACKEND:
+      // const res = await axios.get("/admin/users");
+      // setUsers(res.data || []);
+
+      // ✅ DÙNG MOCK DATA: Giả lập delay 1 giây để test UI Loading
+      setTimeout(() => {
+        setUsers(mockUsersData);
+        setLoading(false);
+      }, 1000);
+
     } catch (err) {
       console.error("API error:", err.response?.data || err);
       toast("Lỗi tải danh sách người dùng!");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Đảm bảo luôn tắt loading dù có lỗi
     }
   };
 
@@ -36,32 +52,40 @@ const UserManagement = () => {
 
     setLoadingId(user.user_id);
     try {
-      await axios.patch(`/admin/users/${user.user_id}/block`, {
-        is_blocked: !user.is_blocked,
-      });
+      // 🛑 TẠM ẨN GỌI API THẬT:
+      // await axios.patch(`/admin/users/${user.user_id}/block`, {
+      //   is_blocked: !user.is_blocked,
+      // });
 
-      // React: Tạo mảng mới với thông tin user đã được cập nhật
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.user_id === user.user_id ? { ...u, is_blocked: !u.is_blocked } : u
-        )
-      );
+      // ✅ GIẢ LẬP CALL API THÀNH CÔNG (Delay 0.5s):
+      setTimeout(() => {
+        // React: Tạo mảng mới với thông tin user đã được cập nhật
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.user_id === user.user_id ? { ...u, is_blocked: !u.is_blocked } : u
+          )
+        );
 
-      toast(
-        !user.is_blocked
-          ? `Đã khóa tài khoản ${user.full_name}`
-          : `Đã mở khóa tài khoản ${user.full_name}`
-      );
+        toast(
+          !user.is_blocked
+            ? `Đã khóa tài khoản ${user.full_name}`
+            : `Đã mở khóa tài khoản ${user.full_name}`
+        );
+        setLoadingId(null);
+      }, 500);
+
     } catch (err) {
       console.error("Block error:", err?.response?.data || err);
       toast("Thao tác thất bại!");
-    } finally {
       setLoadingId(null);
     }
   };
 
   // === COMPUTED (Derived State) ===
-  const filteredUsers = users.filter((u) => {
+  // Bọc lớp an toàn: Đảm bảo users luôn là mảng để tránh lỗi "users.filter is not a function"
+  const safeUsers = Array.isArray(users) ? users : [];
+  
+  const filteredUsers = safeUsers.filter((u) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -109,7 +133,6 @@ const UserManagement = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h3 className="mb-0">Quản lý người dùng</h3>
         <div>
-          {/* v-model được thay bằng value + onChange */}
           <input
             type="text"
             value={searchQuery}
@@ -176,8 +199,14 @@ const UserManagement = () => {
                         className={`btn btn-sm ${user.is_blocked ? "btn-success" : "btn-warning"}`}
                         disabled={loadingId === user.user_id}
                       >
-                        <i className={`bi me-1 ${user.is_blocked ? "bi-unlock" : "bi-lock"}`}></i>
-                        {user.is_blocked ? "Mở khóa" : "Khóa"}
+                        {loadingId === user.user_id ? (
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        ) : (
+                          <>
+                            <i className={`bi me-1 ${user.is_blocked ? "bi-unlock" : "bi-lock"}`}></i>
+                            {user.is_blocked ? "Mở khóa" : "Khóa"}
+                          </>
+                        )}
                       </button>
                     </td>
                   </tr>
@@ -196,15 +225,15 @@ const UserManagement = () => {
         )}
 
         {/* Trạng thái Trống (Empty State) */}
-        {!loading && users.length === 0 && (
+        {!loading && safeUsers.length === 0 && (
           <div className="p-5 text-center text-muted">
             <i className="bi bi-people fs-1"></i>
             <p>Chưa có người dùng nào</p>
           </div>
         )}
         
-        {/* Báo lỗi nếu tìm kiếm không ra kết quả (Tính năng bổ sung thêm cho UX) */}
-        {!loading && users.length > 0 && filteredUsers.length === 0 && (
+        {/* Báo lỗi nếu tìm kiếm không ra kết quả */}
+        {!loading && safeUsers.length > 0 && filteredUsers.length === 0 && (
           <div className="p-4 text-center text-muted">
             <p>Không tìm thấy kết quả nào phù hợp với "{searchQuery}"</p>
           </div>
