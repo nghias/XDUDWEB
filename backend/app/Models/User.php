@@ -25,6 +25,7 @@ class User extends Authenticatable
         'vai_tro',
         'trang_thai',
         'anh_dai_dien',
+        'ngay_tao',
     ];
 
     //Ẩn cột mật khẩu khi trả dữ liệu về cho Frontend (Bảo mật)

@@ -126,4 +126,69 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Mật khẩu đã được cập nhật thành công!']);
     }
+
+    // Hàm Đăng ký tài khoản
+    public function register(Request $request)
+    {
+        $request->validate([
+            'ho_ten' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:nguoi_dung,email',
+            'mat_khau' => 'required|string|min:8',
+            'so_dien_thoai' => 'required|string|max:10|unique:nguoi_dung,so_dien_thoai'
+        ], [
+            'email.unique' => 'Email này đã được sử dụng.',
+            'so_dien_thoai.unique' => 'Số điện thoại này đã được đăng ký.',
+            'mat_khau.min' => 'Mật khẩu phải có ít nhất 8 ký tự.'
+        ]);
+
+        $user = User::create([
+            'ho_ten' => $request->ho_ten,
+            'email' => $request->email,
+            'mat_khau' => Hash::make($request->mat_khau),
+            'so_dien_thoai' => $request->so_dien_thoai,
+            'vai_tro' => 'nguoi_tim_phong',
+            'trang_thai' => 'hoat_dong',
+            'ngay_tao' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng ký tài khoản thành công!',
+            'data' => $user
+        ], 201);
+    }
+
+    // Hàm Đổi mật khẩu (Yêu cầu đã đăng nhập)
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'mat_khau_cu' => 'required',
+            'mat_khau_moi' => 'required|min:8'
+        ], [
+            'mat_khau_moi.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.'
+        ]);
+
+        $user = $request->user();
+
+        // Kiểm tra mật khẩu cũ có khớp với database không
+        if (!Hash::check($request->mat_khau_cu, $user->mat_khau)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mật khẩu cũ không chính xác!'
+            ], 400);
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->update([
+            'mat_khau' => Hash::make($request->mat_khau_moi)
+        ]);
+
+        // (Tùy chọn) Xóa tất cả token để yêu cầu đăng nhập lại trên các thiết bị khác
+        // $user->tokens()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đổi mật khẩu thành công!'
+        ], 200);
+    }
 }
