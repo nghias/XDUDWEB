@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TinDang extends Model
 {
     protected $table = 'tin_dang';
+    public $timestamps = false;
 
   protected $fillable = [
     'ma_chu_nha',

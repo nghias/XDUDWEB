@@ -10,6 +10,25 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\TinDangController;
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\TinDangController as AdminTinDangController;
+use App\Http\Controllers\Admin\DichVuController;
+
+Route::prefix('admin')->group(function () {
+    
+    // 1. Quản lý người dùng (nguoi_dung)
+    //  AdminUserController
+    Route::get('users', [AdminUserController::class, 'index']);
+    Route::post('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus']);// Khóa/Mở khóa
+    Route::delete('users/{id}', [AdminUserController::class, 'destroy']);// Xóa người dùng
+
+    // 2. Quản lý thông tin đăng (tin_dang)
+    //  AdminTinDangController
+    Route::get('tin-dang', [AdminTinDangController::class, 'index']);
+    Route::post('tin-dang/{id}/duyet', [AdminTinDangController::class, 'duyetTin']);// Duyệt tin/Từ chối
+    Route::delete('tin-dang/{id}', [AdminTinDangController::class, 'destroy']);// Xóa tin
+    
+});
 Route::get(
     '/tat-ca-tin-dang',
     [TinDangController::class, 'tatCaTinDang']
