@@ -21,13 +21,19 @@ const ChangePassword = () => {
         setError('');
         setSuccessMsg('');
 
-        // 1. Kiểm tra xác nhận mật khẩu mới ở frontend
+        // 1. Kiểm tra mật khẩu mới phải khác mật khẩu cũ
+        if (matKhauCu === matKhauMoi) {
+            setError('Mật khẩu mới phải khác mật khẩu hiện tại!');
+            return;
+        }
+
+        // 2. Kiểm tra xác nhận mật khẩu mới
         if (matKhauMoi !== xacNhanMatKhau) {
             setError('Xác nhận mật khẩu mới không khớp!');
             return;
         }
 
-        // 2. Lấy token để chứng minh đã đăng nhập
+        // 3. Lấy token để chứng minh đã đăng nhập
         const token = localStorage.getItem('auth_token');
         if (!token) {
             setError('Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn.');
@@ -62,17 +68,26 @@ const ChangePassword = () => {
                 setMatKhauMoi('');
                 setXacNhanMatKhau('');
 
-                // Tùy chọn: Chuyển hướng về trang chủ sau 2 giây
+                // Chuyển hướng về trang chủ sau 2 giây
                 setTimeout(() => {
                     navigate('/');
                 }, 2000);
 
             } else {
-                // Xử lý lỗi 422 (Validate) hoặc 400 (Sai mật khẩu cũ)
+                // Xử lý lỗi 401: Token hết hạn hoặc không hợp lệ
+                if (response.status === 401) {
+                    setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    localStorage.removeItem('auth_token'); // Xóa token lỗi
+                    setTimeout(() => navigate('/login'), 2000);
+                    return;
+                }
+
+                // Xử lý lỗi 422 (Validate từ Laravel)
                 if (response.status === 422 && result.errors) {
                     const firstErrorKey = Object.keys(result.errors)[0];
                     setError(result.errors[firstErrorKey][0]);
                 } else {
+                    // Lỗi 400 (Sai mật khẩu cũ) hoặc lỗi chung chung khác
                     setError(result.message || 'Đổi mật khẩu thất bại. Vui lòng thử lại!');
                 }
             }

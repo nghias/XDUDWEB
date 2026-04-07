@@ -23,6 +23,14 @@ const Register = () => {
         setError('');
         setSuccessMsg('');
 
+        // Kiểm tra frontend: Họ tên không được chứa ký tự đặc biệt và số
+        // Regex này chỉ cho phép chữ cái (bao gồm tiếng Việt có dấu) và khoảng trắng
+        const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/;
+        if (!nameRegex.test(hoTen.trim())) {
+            setError('Họ và tên không hợp lệ (không được chứa số hoặc ký tự đặc biệt)!');
+            return;
+        }
+
         // Kiểm tra frontend: Mật khẩu xác nhận phải khớp
         if (matKhau !== xacNhanMatKhau) {
             setError('Mật khẩu xác nhận không khớp!');
@@ -45,7 +53,7 @@ const Register = () => {
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ 
-                    ho_ten: hoTen,
+                    ho_ten: hoTen.trim(), // Xóa khoảng trắng thừa ở 2 đầu trước khi gửi
                     email: email, 
                     so_dien_thoai: soDienThoai,
                     mat_khau: matKhau 
