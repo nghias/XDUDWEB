@@ -60,6 +60,8 @@ function App() {
 
         {/* --- NHÓM 1: KHÔNG CÓ LAYOUT (Không có Header/Footer) --- */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>

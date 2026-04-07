@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Search, Home, DollarSign, Navigation } from "lucide-react";
+import { MapPin, DollarSign, Navigation } from "lucide-react";
 
 const HomeView = () => {
   // Mock data dựa trên đúng bảng 'posts' trong Database
@@ -32,28 +32,8 @@ const HomeView = () => {
 
   return (
     <div className="bg-light pb-5">
-      {/* Banner & Thanh tìm kiếm */}
-      <div className="bg-primary text-white py-4 shadow-sm mb-5">
-        <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-          <div className="d-flex align-items-center mb-3 mb-md-0 gap-2">
-            <Home size={28} />
-            <h2 className="h4 mb-0 fw-bold text-uppercase">STU Accommodation</h2>
-          </div>
-          
-          <div className="bg-white rounded-pill px-3 py-2 d-flex align-items-center shadow-sm w-100" style={{ maxWidth: '400px' }}>
-            <Search size={18} className="text-secondary me-2" />
-            <input
-              type="text"
-              placeholder="Tìm quận, tên đường..."
-              className="border-0 w-100 outline-none"
-              style={{ boxShadow: 'none', outline: 'none' }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
-      <main className="container">
+      <main className="container pt-4">
         <h3 className="h5 fw-bold text-dark mb-4 d-flex align-items-center gap-2">
           <Navigation size={22} className="text-primary" />
           Phòng trọ nổi bật quanh khu vực của bạn
@@ -113,9 +93,6 @@ const HomeView = () => {
         .custom-card-hover:hover {
           transform: translateY(-5px);
           box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-        }
-        .outline-none:focus {
-          outline: none;
         }
       `}</style>
     </div>
