@@ -8,8 +8,6 @@ class NguoiDung extends Model
 {
     protected $table = 'nguoi_dung';
 
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'email',
         'mat_khau',

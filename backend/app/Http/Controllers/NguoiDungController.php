@@ -15,13 +15,7 @@ class NguoiDungController extends Controller
 
     public function chiTietNguoiDung($id)
     {
-        $user = NguoiDung::find($id);
-
-        if(!$user){
-            return response()->json(["message"=>"Không tìm thấy"],404);
-        }
-
-        return response()->json($user);
+        return response()->json(NguoiDung::find($id));
     }
 
     public function taoNguoiDung(Request $request)
@@ -35,10 +29,6 @@ class NguoiDungController extends Controller
     {
         $user = NguoiDung::find($id);
 
-        if(!$user){
-            return response()->json(["message"=>"Không tìm thấy"],404);
-        }
-
         $user->update($request->all());
 
         return response()->json($user);
@@ -48,9 +38,7 @@ class NguoiDungController extends Controller
     {
         NguoiDung::destroy($id);
 
-        return response()->json([
-            "message"=>"Đã xóa người dùng"
-        ]);
+        return response()->json(["message"=>"deleted"]);
     }
 
 }

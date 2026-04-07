@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NguoiDungController;
 
+
 Route::get('/tat-ca-nguoi-dung',
     [NguoiDungController::class,'tatCaNguoiDung']
 );

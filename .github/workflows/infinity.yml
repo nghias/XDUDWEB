@@ -1,0 +1,48 @@
+name: Deploy to InfinityFree via FTP
+
+on:
+  push:
+    branches:
+      - main # Chạy tự động khi có code mới đẩy lên nhánh main
+
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v4
+
+    # 1. Build Frontend (React)
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm install
+        npm run build
+
+    # 2. Copy code React (đã build) vào thư mục public của Laravel
+    - name: Move React to Laravel Public
+      run: cp -r frontend/dist/* backend/public/
+
+    # 3. Build Backend (Laravel)
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # InfinityFree hiện hỗ trợ tối đa PHP 8.2
+    - name: Install Composer Dependencies
+      working-directory: ./backend
+      run: composer install --no-dev --optimize-autoloader
+
+    # 4. Deploy qua FTP lên InfinityFree
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.3
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./backend/ # Chỉ đẩy thư mục backend (đã gộp cả FE) lên
+        server-dir: /htdocs/ # Thư mục gốc web của InfinityFree
