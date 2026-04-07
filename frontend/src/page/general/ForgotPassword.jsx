@@ -239,7 +239,7 @@ const ForgotPassword = () => {
                 {/* Về trang đăng nhập */}
                 <div className="text-center mt-4 pt-3 border-top">
                     <Link to="/login" className="text-decoration-none text-secondary small fw-medium">
-                        <i className="bi bi-arrow-left me-1"></i> Quay lại đăng nhập
+                        <i className="bi bi-arrow-left me-1"></i> Quay lại
                     </Link>
                 </div>
             </div>
