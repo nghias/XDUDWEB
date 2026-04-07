@@ -152,6 +152,13 @@ const Login = () => {
                             Đăng ký ngay
                         </Link>
                     </div>
+
+                    {/* Nút quay lại */}
+                    <div className="text-center mt-4 pt-3 border-top">
+                        <Link to="/" className="text-decoration-none text-secondary small fw-medium">
+                            <i className="bi bi-arrow-left me-1"></i> Quay lại
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>
