@@ -6,6 +6,11 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // GENERAL
 import Login from './page/general/Login';
+// BỔ SUNG 2 DÒNG IMPORT DƯỚI ĐÂY:
+import Register from './page/general/Register'; 
+import ForgotPassword from './page/general/ForgotPassword'; 
+import ChangePassword from './page/general/ChangePassword';
+
 import Header from './components/Header'; 
 import Footer from './components/Footer'; 
 
@@ -47,7 +52,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   // Đã đăng nhập nhưng không có quyền truy cập route này
   if (allowedRoles && !allowedRoles.includes(userData.vai_tro)) {
     if (userData.vai_tro === 'quan_tri') return <Navigate to="/admin" replace />;
-    return <Navigate to="/" replace />; // Sửa lại thành trả về trang chủ "/" thay vì "/user"
+    return <Navigate to="/" replace />; 
   }
 
   return children;
@@ -62,26 +67,19 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route 
+            path="/change-password" 
+            element={
+                <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
+                    <ChangePassword />
+                </ProtectedRoute>
+            } 
+        />
 
         {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>
-          {/* Cấu hình "/" là trang chủ mặc định và cho phép ai cũng xem được */}
           <Route path="/" element={<Home />} />
-          
-          {/* Giữ lại path "/user" nếu bạn vẫn muốn link này hoạt động (có thể trỏ về Home) */}
           <Route path="/user" element={<Navigate to="/" replace />} />
-
-          {/* CÁC ROUTE CẦN ĐĂNG NHẬP MỚI XEM ĐƯỢC CỦA USER SẼ ĐỂ Ở ĐÂY */}
-          {/* Ví dụ: 
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha']}>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          /> 
-          */}
         </Route>
 
         {/* --- NHÓM 3: ADMIN --- */}
