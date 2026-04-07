@@ -20,8 +20,6 @@ Route::get(
     [TinDangController::class, 'chiTietTinDang']
 );
 
-Route::apiResource('nguoi-dung', UserController::class);
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

@@ -4,12 +4,20 @@ import { Link, useNavigate } from 'react-router-dom';
 const Header = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false); // Thêm state xử lý loading
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Lấy thông tin user từ localStorage
-    const userSession = localStorage.getItem('user_session');
-    const userData = userSession ? JSON.parse(userSession) : null;
+    // Lấy thông tin user từ localStorage an toàn hơn
+    let userData = null;
+    try {
+        const userSession = localStorage.getItem('user_session');
+        if (userSession && userSession !== 'undefined') {
+            userData = JSON.parse(userSession);
+        }
+    } catch (error) {
+        console.error('Lỗi khi đọc dữ liệu user:', error);
+        localStorage.removeItem('user_session'); // Xóa đi nếu dữ liệu bị lỗi
+    }
 
     const defaultAvatar = userData?.ho_ten 
         ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ho_ten)}&background=0D8ABC&color=fff` 
@@ -28,13 +36,11 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // HÀM ĐĂNG XUẤT ĐÃ ĐƯỢC TỐI ƯU
     const handleLogout = async () => {
-        setIsLoggingOut(true); // Bật trạng thái loading
+        setIsLoggingOut(true);
         const token = localStorage.getItem('auth_token');
         
         try {
-            // Cố gắng gọi API báo cho backend xóa token (nếu có mạng và server chạy)
             if (token) {
                 await fetch('https://xdudweb-php.onrender.com/api/logout', {
                     method: 'POST',
@@ -46,14 +52,10 @@ const Header = () => {
             }
         } catch (error) {
             console.error("Lỗi khi gọi API đăng xuất:", error);
-            // Kệ lỗi mạng, cứ tiến hành đăng xuất ở dưới
         } finally {
-            // Khối FINALLY luôn chạy cho dù API có lỗi hay chạy chậm
             localStorage.removeItem('user_session');
             localStorage.removeItem('auth_token');
             setIsLoggingOut(false);
-            
-            // Đóng dropdown, thông báo và chuyển hướng
             setIsDropdownOpen(false);
             alert('Đã đăng xuất thành công!');
             navigate('/login');
@@ -63,7 +65,7 @@ const Header = () => {
     return (
         <header className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
             <div className="container">
-                <Link to="/user" className="navbar-brand d-flex align-items-center gap-2">
+                <Link to="/" className="navbar-brand d-flex align-items-center gap-2">
                     <img src={logoUrl} alt="Logo" width="40" height="40" />
                     <span className="fw-bold text-primary">Tìm Trọ Trực Tuyến</span>
                 </Link>
@@ -83,6 +85,7 @@ const Header = () => {
                 </div>
 
                 <div className="d-flex align-items-center" ref={dropdownRef}>
+                    {/* KIỂM TRA ĐĂNG NHẬP Ở ĐÂY */}
                     {userData ? (
                         <div className="dropdown">
                             <div 
@@ -108,7 +111,6 @@ const Header = () => {
                                     <li><Link className="dropdown-item" to="/change-password">Đổi mật khẩu</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li>
-                                        {/* Nút đăng xuất vô hiệu hóa và đổi chữ khi đang xử lý */}
                                         <button 
                                             className="dropdown-item text-danger fw-bold" 
                                             onClick={handleLogout}
@@ -121,7 +123,10 @@ const Header = () => {
                             )}
                         </div>
                     ) : (
-                        <Link to="/login" className="btn btn-outline-primary">Đăng nhập</Link>
+                        // NẾU CHƯA ĐĂNG NHẬP SẼ HIỆN NÚT NÀY
+                        <Link to="/login" className="btn btn-primary fw-medium px-4" style={{ borderRadius: '8px' }}>
+                            Đăng nhập
+                        </Link>
                     )}
                 </div>
             </div>

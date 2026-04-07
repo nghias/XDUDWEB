@@ -6,8 +6,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // GENERAL
 import Login from './page/general/Login';
-import Header from './components/Header'; // Hãy sửa lại đường dẫn này cho đúng với thư mục của bạn
-import Footer from './components/Footer'; // Hãy sửa lại đường dẫn này cho đúng với thư mục của bạn
+import Header from './components/Header'; 
+import Footer from './components/Footer'; 
 
 // USER
 import Home from './page/user/Home';
@@ -25,7 +25,6 @@ const MainLayout = () => {
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Header />
-      {/* Thẻ Outlet sẽ render các component con (như Home) nằm bên trong Route MainLayout */}
       <main className="flex-grow-1">
         <Outlet />
       </main>
@@ -47,12 +46,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   
   // Đã đăng nhập nhưng không có quyền truy cập route này
   if (allowedRoles && !allowedRoles.includes(userData.vai_tro)) {
-    // Tự động điều hướng về đúng không gian làm việc của role đó
     if (userData.vai_tro === 'quan_tri') return <Navigate to="/admin" replace />;
-    return <Navigate to="/user" replace />; 
+    return <Navigate to="/" replace />; // Sửa lại thành trả về trang chủ "/" thay vì "/user"
   }
 
-  // Hợp lệ thì cho phép render component con
   return children;
 };
 
@@ -62,30 +59,33 @@ function App() {
       <Routes>
 
         {/* --- NHÓM 1: KHÔNG CÓ LAYOUT (Không có Header/Footer) --- */}
-        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
 
-        {/* --- NHÓM 2: USER CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
+        {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>
+          {/* Cấu hình "/" là trang chủ mặc định và cho phép ai cũng xem được */}
+          <Route path="/" element={<Home />} />
+          
+          {/* Giữ lại path "/user" nếu bạn vẫn muốn link này hoạt động (có thể trỏ về Home) */}
+          <Route path="/user" element={<Navigate to="/" replace />} />
+
+          {/* CÁC ROUTE CẦN ĐĂNG NHẬP MỚI XEM ĐƯỢC CỦA USER SẼ ĐỂ Ở ĐÂY */}
+          {/* Ví dụ: 
           <Route 
-            path="/user" 
+            path="/profile" 
             element={
-              // Cho phép người tìm phòng và chủ nhà truy cập /user
               <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha']}>
-                <Home />
+                <Profile />
               </ProtectedRoute>
             } 
-          />
-          {/* Sau này bạn có thêm trang Thông tin cá nhân, Đổi mật khẩu... thì viết tiếp vào đây */}
-          {/* <Route path="/profile" element={<Profile />} /> */}
+          /> 
+          */}
         </Route>
 
         {/* --- NHÓM 3: ADMIN --- */}
-        {/* Admin thường có Layout riêng (AdminLayout đã import) nên để ngoài MainLayout */}
         <Route 
           path="/admin" 
           element={
-            // Chỉ cho phép admin truy cập cụm route này
             <ProtectedRoute allowedRoles={['quan_tri']}>
               <AdminLayout />
             </ProtectedRoute>
@@ -99,7 +99,7 @@ function App() {
         </Route>
 
         {/* --- NOT FOUND --- */}
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="*" element={<h1 className="text-center mt-5">404 Not Found</h1>} />
 
       </Routes>
     </Router>
