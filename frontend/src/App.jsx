@@ -17,6 +17,7 @@ import Footer from './components/Footer';
 // USER
 import Home from './page/user/Home';
 import Search from './page/user/Search';
+import ChiTietTinDang from './page/user/ChiTietTinDang';
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/Admindashboard';
@@ -80,6 +81,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/search" element={<Search />} /> 
           <Route path="/" element={<Home />} />
+          <Route path="/chi-tiet-tin-dang/:id" element={<ChiTietTinDang />} />
           <Route path="/user" element={<Navigate to="/" replace />} />
         </Route>
 
