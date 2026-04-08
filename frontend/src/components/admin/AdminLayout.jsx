@@ -2,17 +2,19 @@ import React, { useState, useRef } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 const AdminLayout = () => {
   const navigate = useNavigate();
   const [pageTitle, setPageTitle] = useState("Admin Panel");
 
+  // === CÁC STATE BỊ THIẾU ĐÃ ĐƯỢC THÊM VÀO ĐÂY ===
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   // --- Refs cho Bootstrap Modals ---
-  // Trong React, chúng ta dùng useRef thay vì document.getElementById
   const packageModalRef = useRef(null);
   const userModalRef = useRef(null);
 
-  // --- Logic User (Tương tự Vue) ---
+  // --- Logic User ---
   const [newUser, setNewUser] = useState({
     full_name: "",
     email: "",
@@ -23,14 +25,13 @@ const AdminLayout = () => {
   const [creating, setCreating] = useState(false);
 
   const openCreateUserModal = () => {
-    // Đảm bảo window.bootstrap đã được load từ CDN hoặc import
     if (window.bootstrap && userModalRef.current) {
       const modal = new window.bootstrap.Modal(userModalRef.current);
       modal.show();
     }
   };
 
-  // --- [MỚI] Logic Package ---
+  // --- Logic Package ---
   const initialPackageState = {
     package_name: "",
     price: 0,
@@ -51,7 +52,7 @@ const AdminLayout = () => {
   };
 
   const submitCreatePackage = async (e) => {
-    if (e) e.preventDefault(); // Thay thế cho @submit.prevent
+    if (e) e.preventDefault();
     setCreatingPackage(true);
 
     try {
@@ -76,14 +77,43 @@ const AdminLayout = () => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.dispatchEvent(new Event("storage"));
-    navigate("/login"); // Thay thế cho this.router.push
+  // --- LOGIC ĐĂNG XUẤT ---
+  const handleLogout = async () => {
+      setIsLoggingOut(true);
+      // Quét tất cả các key bạn có thể đã dùng để lưu token
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token') || localStorage.getItem('access_token');
+      
+      try {
+          if (token) {
+              await fetch('https://xdudweb-php.onrender.com/api/logout', {
+                  method: 'POST',
+                  headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Accept': 'application/json',
+                  }
+              });
+          }
+      } catch (error) {
+          console.error("Lỗi khi gọi API đăng xuất:", error);
+      } finally {
+          // Xóa toàn bộ dấu vết đăng nhập
+          localStorage.removeItem('user_session');
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('token');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+          
+          setIsLoggingOut(false);
+          setIsDropdownOpen(false); // Có thể bỏ nếu bạn không dùng dropdown menu
+          
+          window.dispatchEvent(new Event("storage")); // Báo cho các component khác biết đã đăng xuất
+          
+          alert('Đã đăng xuất thành công!');
+          navigate('/login');
+      }
   };
 
-  // Hàm hỗ trợ style cho NavLink (Thay thế active-class của Vue)
+  // Hàm hỗ trợ style cho NavLink
   const navLinkClass = ({ isActive }) =>
     isActive
       ? "nav-link rounded px-3 py-2 d-flex align-items-center bg-white text-danger fw-bold"
@@ -92,11 +122,9 @@ const AdminLayout = () => {
   return (
     <div className="d-flex min-vh-100 bg-gray-100">
       {/* Sidebar */}
-     {/* Code mới đã sửa */}
-<div className="bg-danger text-white d-flex flex-column flex-shrink-0" style={{ width: "280px", minHeight: "100vh" }}>
+      <div className="bg-danger text-white d-flex flex-column flex-shrink-0" style={{ width: "280px", minHeight: "100vh" }}>
         <div className="p-4 text-center border-bottom border-light">
           <h3 className="mb-0 fw-bold">ADMIN THUETRO.VN</h3>
-          
         </div>
         <nav className="flex-grow-1 p-3">
           <ul className="nav flex-column gap-2">
@@ -145,9 +173,21 @@ const AdminLayout = () => {
                 <i className="bi bi-plus-circle-fill me-2"></i> Thêm gói dịch vụ
               </button>
               
-              {/* Nút Đăng xuất (Tùy chọn, tôi gọi hàm logout ở đây) */}
-              <button onClick={logout} className="btn btn-outline-danger btn-lg shadow-sm d-flex align-items-center">
-                 <i className="bi bi-box-arrow-right me-2"></i> Thoát
+              {/* Nút Đăng xuất */}
+              <button 
+                  className="btn btn-outline-danger btn-lg shadow-sm d-flex align-items-center" 
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+              >
+                  {isLoggingOut ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span> Đang xử lý...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                    </>
+                  )}
               </button>
             </div>
           </div>
@@ -155,7 +195,7 @@ const AdminLayout = () => {
 
         {/* Dynamic Pages Render Here */}
         <div className="container-fluid px-4 pb-5 flex-grow-1">
-          <Outlet /> {/* Tương đương <router-view /> */}
+          <Outlet />
         </div>
       </div>
 
@@ -165,7 +205,7 @@ const AdminLayout = () => {
         id="createPackageModal"
         tabIndex="-1"
         aria-hidden="true"
-        ref={packageModalRef} // Gắn ref vào đây để JS thao tác
+        ref={packageModalRef}
       >
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
@@ -179,7 +219,6 @@ const AdminLayout = () => {
             <div className="modal-body">
               <form onSubmit={submitCreatePackage}>
                 <div className="row g-3">
-                  {/* Tên gói */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Tên gói <span className="text-danger">*</span></label>
                     <input
@@ -192,7 +231,6 @@ const AdminLayout = () => {
                     />
                   </div>
 
-                  {/* Giá */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Giá (VNĐ) <span className="text-danger">*</span></label>
                     <input
@@ -206,7 +244,6 @@ const AdminLayout = () => {
                     />
                   </div>
 
-                  {/* Thời hạn */}
                   <div className="col-md-4">
                     <label className="form-label fw-bold">Thời hạn (Ngày)</label>
                     <input
@@ -218,7 +255,6 @@ const AdminLayout = () => {
                     />
                   </div>
 
-                  {/* Số tin tối đa */}
                   <div className="col-md-4">
                     <label className="form-label fw-bold">Số tin tối đa</label>
                     <input
@@ -229,7 +265,6 @@ const AdminLayout = () => {
                     />
                   </div>
 
-                  {/* Checkbox Gói nổi bật */}
                   <div className="col-md-4 d-flex align-items-end">
                     <div className="form-check mb-2">
                       <input
@@ -245,7 +280,6 @@ const AdminLayout = () => {
                     </div>
                   </div>
 
-                  {/* Mô tả */}
                   <div className="col-12">
                     <label className="form-label fw-bold">Mô tả gói</label>
                     <textarea
@@ -273,9 +307,7 @@ const AdminLayout = () => {
         </div>
       </div>
       
-      {/* Nơi đặt createUserModal nếu bạn có... */}
       <div id="createUserModal" ref={userModalRef}></div>
-
     </div>
   );
 };
