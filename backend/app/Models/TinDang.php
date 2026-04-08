@@ -33,7 +33,10 @@ class TinDang extends Model
 
     public function viTri()
     {
-        return $this->belongsTo(ViTri::class,'vi_tri_id');
+        // Tham số 1: Model
+        // Tham số 2: Khóa ngoại ở bảng tin_dang (vi_tri_id)
+        // Tham số 3: Khóa chính ở bảng vi_tri (ma_vi_tri)
+        return $this->belongsTo(ViTri::class, 'vi_tri_id', 'ma_vi_tri');
     }
 
     public function hinhAnh()
