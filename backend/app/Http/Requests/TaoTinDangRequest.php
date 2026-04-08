@@ -27,7 +27,7 @@ class TaoTinDangRequest extends FormRequest
 
             'loai_phong_id' => 'required|exists:loai_phong,id',
 
-            'vi_tri_id' => 'required|exists:vi_tri,id'
+            'vi_tri_id' => 'required|exists:vi_tri,ma_vi_tri',
 
         ];
     }
