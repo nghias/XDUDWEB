@@ -129,7 +129,12 @@ const Profile = () => {
                                         <input 
                                             type="text" 
                                             className="form-control bg-light text-capitalize" 
-                                            value={formData.vai_tro === 'admin' ? 'Quản trị viên' : formData.vai_tro === 'chu_tro' ? 'Chủ trọ' : 'Người thuê'}
+                                            value={
+                                                formData.vai_tro === 'quan_tri' ? 'Quản trị viên' : 
+                                                formData.vai_tro === 'chu_nha' ? 'Chủ nhà' : 
+                                                formData.vai_tro === 'nguoi_tim_phong' ? 'Người tìm phòng' : 
+                                                'Chưa cập nhật'
+                                            }
                                             readOnly
                                             disabled
                                         />
