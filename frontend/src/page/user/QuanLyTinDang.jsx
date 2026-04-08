@@ -21,11 +21,15 @@ const QuanLyTinDang = () => {
     const userData = JSON.parse(localStorage.getItem('user_session'));
     const token = localStorage.getItem('auth_token');
 
+    // 1. Fetch danh sách tin đăng của chủ nhà
     const fetchMyPosts = async () => {
         setIsLoading(true);
         try {
             const res = await fetch(`https://xdudweb-php.onrender.com/api/tin-dang-cua-toi/${userData.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
             });
             const result = await res.json();
             if (result.data) {
@@ -39,14 +43,18 @@ const QuanLyTinDang = () => {
     };
 
     useEffect(() => {
-        fetchMyPosts();
+        if (userData && userData.id) {
+            fetchMyPosts();
+        }
     }, []);
 
+    // 2. Xử lý Form Input
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    // 3. Xử lý Thêm / Sửa
     const handleSubmit = async (e) => {
         e.preventDefault();
         const url = isEditing 
@@ -55,9 +63,22 @@ const QuanLyTinDang = () => {
         
         const method = isEditing ? 'PUT' : 'POST';
         
+        // Chuẩn bị payload khớp CHÍNH XÁC với những gì Backend đang mong đợi
         const payload = {
-            ...formData,
-            ma_chu_nha: userData.id,
+            tieu_de: formData.tieu_de,
+            mo_ta: formData.mo_ta,
+            dien_tich: formData.dien_tich,
+            trang_thai: formData.trang_thai,
+
+            // Đổi tên trường cho khớp Backend
+            gia: formData.gia_thue,
+            nguoi_dung_id: userData.id,
+            loai_phong_id: formData.ma_loai_phong,
+            
+            // Trường bắt buộc phải có
+            vi_tri_id: 1, 
+
+            // Cập nhật ngày đăng và lượt xem
             ngay_dang: isEditing ? formData.ngay_dang : new Date().toISOString().split('T')[0],
             luot_xem: isEditing ? formData.luot_xem : 0
         };
@@ -68,29 +89,49 @@ const QuanLyTinDang = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
+                    'Accept': 'application/json' // Cần thiết để bắt lỗi 422 JSON
                 },
                 body: JSON.stringify(payload)
             });
 
-            if (res.ok) {
+            const result = await res.json();
+
+            // HTTP 200 hoặc 201 (Thành công)
+            if (res.ok || res.status === 201) {
                 alert(isEditing ? 'Cập nhật thành công!' : 'Thêm mới thành công!');
                 setShowModal(false);
-                fetchMyPosts();
-            } else {
-                alert('Có lỗi xảy ra, vui lòng thử lại.');
+                fetchMyPosts(); // Refresh danh sách
+            } 
+            // Xử lý lỗi 422 (Validation từ Laravel)
+            else if (res.status === 422) {
+                let errorString = "Vui lòng kiểm tra lại dữ liệu:\n";
+                if (result.errors) {
+                    for (const key in result.errors) {
+                        errorString += `- ${result.errors[key][0]}\n`;
+                    }
+                }
+                alert(errorString);
+            } 
+            // Các lỗi khác
+            else {
+                alert(result.message || 'Có lỗi xảy ra, vui lòng thử lại.');
             }
         } catch (error) {
             console.error("Lỗi lưu tin:", error);
+            alert("Không thể kết nối đến server.");
         }
     };
 
+    // 4. Xử lý Xóa
     const handleDelete = async (id) => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa tin đăng này?')) return;
         try {
             const res = await fetch(`https://xdudweb-php.onrender.com/api/xoa-tin-dang/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
             });
             if (res.ok) {
                 alert('Xóa thành công!');
@@ -101,20 +142,42 @@ const QuanLyTinDang = () => {
         }
     };
 
+    // Mở modal thêm mới
     const openAddModal = () => {
         setIsEditing(false);
-        setFormData({ id: null, tieu_de: '', mo_ta: '', gia_thue: '', dien_tich: '', ma_loai_phong: '1', trang_thai: 'hoat_dong' });
+        setFormData({ 
+            id: null, 
+            tieu_de: '', 
+            mo_ta: '', 
+            gia_thue: '', 
+            dien_tich: '', 
+            ma_loai_phong: '1', 
+            trang_thai: 'hoat_dong' 
+        });
         setShowModal(true);
     };
 
+    // Mở modal sửa
     const openEditModal = (post) => {
         setIsEditing(true);
-        setFormData({ ...post });
+        // Map lại dữ liệu từ Backend về form Frontend
+        setFormData({ 
+            id: post.id,
+            tieu_de: post.tieu_de,
+            mo_ta: post.mo_ta,
+            gia_thue: post.gia || post.gia_thue, // Xử lý nếu backend trả về 'gia'
+            dien_tich: post.dien_tich,
+            ma_loai_phong: post.loai_phong_id || post.ma_loai_phong, 
+            trang_thai: post.trang_thai,
+            ngay_dang: post.ngay_dang,
+            luot_xem: post.luot_xem
+        });
         setShowModal(true);
     };
 
+    // Filter tìm kiếm
     const filteredPosts = posts.filter(post => 
-        post.tieu_de.toLowerCase().includes(searchTerm.toLowerCase())
+        post.tieu_de && post.tieu_de.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -126,6 +189,7 @@ const QuanLyTinDang = () => {
                 </button>
             </div>
 
+            {/* Thanh tìm kiếm */}
             <div className="card shadow-sm mb-4 border-0">
                 <div className="card-body">
                     <div className="input-group">
@@ -141,6 +205,7 @@ const QuanLyTinDang = () => {
                 </div>
             </div>
 
+            {/* Bảng dữ liệu */}
             <div className="card shadow-sm border-0">
                 <div className="card-body p-0">
                     <div className="table-responsive">
@@ -163,7 +228,9 @@ const QuanLyTinDang = () => {
                                         <tr key={post.id}>
                                             <td>{post.id}</td>
                                             <td className="fw-medium text-truncate" style={{maxWidth: '250px'}}>{post.tieu_de}</td>
-                                            <td className="text-danger fw-bold">{Number(post.gia_thue).toLocaleString()} đ</td>
+                                            <td className="text-danger fw-bold">
+                                                {Number(post.gia || post.gia_thue).toLocaleString()} đ
+                                            </td>
                                             <td>{post.dien_tich} m²</td>
                                             <td>
                                                 <span className={`badge ${post.trang_thai === 'hoat_dong' ? 'bg-success' : 'bg-secondary'}`}>
@@ -189,6 +256,7 @@ const QuanLyTinDang = () => {
                 </div>
             </div>
 
+            {/* MODAL THÊM / SỬA */}
             {showModal && (
                 <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="modal-dialog modal-lg modal-dialog-centered">
