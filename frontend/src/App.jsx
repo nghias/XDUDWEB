@@ -16,7 +16,7 @@ import Footer from './components/Footer';
 
 // USER
 import Home from './page/user/Home';
-
+import Search from './page/user/Search';
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/Admindashboard';
@@ -78,6 +78,7 @@ function App() {
 
         {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>
+          <Route path="/search" element={<Search />} /> 
           <Route path="/" element={<Home />} />
           <Route path="/user" element={<Navigate to="/" replace />} />
         </Route>
