@@ -6,11 +6,10 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // GENERAL
 import Login from './page/general/Login';
-// BỔ SUNG 2 DÒNG IMPORT DƯỚI ĐÂY:
 import Register from './page/general/Register'; 
 import ForgotPassword from './page/general/ForgotPassword'; 
 import ChangePassword from './page/general/ChangePassword';
-import ChangePassword from './page/general/Profile';
+import Profile from './page/general/Profile'; // Đã sửa lỗi import trùng tên
 
 import Header from './components/Header'; 
 import Footer from './components/Footer'; 
@@ -19,6 +18,7 @@ import Footer from './components/Footer';
 import Home from './page/user/Home';
 import Search from './page/user/Search';
 import ChiTietTinDang from './page/user/ChiTietTinDang';
+
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/Admindashboard';
@@ -69,22 +69,31 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route 
-            path="/change-password" 
-            element={
-                <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
-                    <ChangePassword />
-                </ProtectedRoute>
-            } 
-        />
-        <Route path="/profile" element={<Profile />} />
 
         {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>
-          <Route path="/search" element={<Search />} /> 
           <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} /> 
           <Route path="/chi-tiet-tin-dang/:id" element={<ChiTietTinDang />} />
           <Route path="/user" element={<Navigate to="/" replace />} />
+
+          {/* Đưa Profile và ChangePassword vào đây để có Header, và BẢO VỆ ROUTE */}
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/change-password" 
+            element={
+              <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
+                <ChangePassword />
+              </ProtectedRoute>
+            } 
+          />
         </Route>
 
         {/* --- NHÓM 3: ADMIN --- */}
