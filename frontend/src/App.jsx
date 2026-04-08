@@ -10,6 +10,7 @@ import Login from './page/general/Login';
 import Register from './page/general/Register'; 
 import ForgotPassword from './page/general/ForgotPassword'; 
 import ChangePassword from './page/general/ChangePassword';
+import ChangePassword from './page/general/Profile';
 
 import Header from './components/Header'; 
 import Footer from './components/Footer'; 
@@ -76,6 +77,7 @@ function App() {
                 </ProtectedRoute>
             } 
         />
+        <Route path="/profile" element={<Profile />} />
 
         {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
         <Route element={<MainLayout />}>
