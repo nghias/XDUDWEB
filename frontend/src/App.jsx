@@ -9,7 +9,7 @@ import Login from './page/general/Login';
 import Register from './page/general/Register'; 
 import ForgotPassword from './page/general/ForgotPassword'; 
 import ChangePassword from './page/general/ChangePassword';
-import Profile from './page/general/Profile'; // Đã sửa lỗi import trùng tên
+import Profile from './page/general/Profile'; 
 
 import Header from './components/Header'; 
 import Footer from './components/Footer'; 
@@ -18,6 +18,7 @@ import Footer from './components/Footer';
 import Home from './page/user/Home';
 import Search from './page/user/Search';
 import ChiTietTinDang from './page/user/ChiTietTinDang';
+import QuanLyTinDang from './page/user/QuanLyTinDang'; // Đã thêm Quản lý tin đăng
 
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
@@ -44,14 +45,12 @@ const MainLayout = () => {
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const session = localStorage.getItem('user_session');
   
-  // Chưa đăng nhập thì đá về trang đăng nhập
   if (!session) {
     return <Navigate to="/login" replace />;
   }
 
   const userData = JSON.parse(session);
   
-  // Đã đăng nhập nhưng không có quyền truy cập route này
   if (allowedRoles && !allowedRoles.includes(userData.vai_tro)) {
     if (userData.vai_tro === 'quan_tri') return <Navigate to="/admin" replace />;
     return <Navigate to="/" replace />; 
@@ -77,7 +76,6 @@ function App() {
           <Route path="/chi-tiet-tin-dang/:id" element={<ChiTietTinDang />} />
           <Route path="/user" element={<Navigate to="/" replace />} />
 
-          {/* Đưa Profile và ChangePassword vào đây để có Header, và BẢO VỆ ROUTE */}
           <Route 
             path="/profile" 
             element={
@@ -91,6 +89,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
                 <ChangePassword />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/quan-ly-tin-dang" 
+            element={
+              <ProtectedRoute allowedRoles={['chu_nha', 'quan_tri']}>
+                <QuanLyTinDang />
               </ProtectedRoute>
             } 
           />
