@@ -19,6 +19,8 @@ import Home from './page/user/Home';
 import Search from './page/user/Search';
 import ChiTietTinDang from './page/user/ChiTietTinDang';
 import QuanLyTinDang from './page/user/QuanLyTinDang'; // Đã thêm Quản lý tin đăng
+import MyPosts from './page/user/MyPosts';
+import DangTin from './page/user/DangTin';
 
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
@@ -74,6 +76,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} /> 
           <Route path="/chi-tiet-tin-dang/:id" element={<ChiTietTinDang />} />
+          <Route path="/dang-tin" element={<DangTin />} />
+          <Route path="/my-posts" element={<MyPosts />} />
           <Route path="/user" element={<Navigate to="/" replace />} />
 
           <Route 

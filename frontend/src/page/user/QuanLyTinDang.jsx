@@ -71,7 +71,7 @@ const QuanLyTinDang = () => {
             trang_thai: formData.trang_thai,
 
             // Đổi tên trường cho khớp Backend
-            gia: formData.gia_thue,
+            gia_thue: formData.gia_thue,
             nguoi_dung_id: userData.id,
             loai_phong_id: formData.ma_loai_phong,
             
@@ -165,7 +165,7 @@ const QuanLyTinDang = () => {
             id: post.id,
             tieu_de: post.tieu_de,
             mo_ta: post.mo_ta,
-            gia_thue: post.gia || post.gia_thue, // Xử lý nếu backend trả về 'gia'
+            gia_thue: post.gia_thue || post.gia_thue, 
             dien_tich: post.dien_tich,
             ma_loai_phong: post.loai_phong_id || post.ma_loai_phong, 
             trang_thai: post.trang_thai,
@@ -229,7 +229,7 @@ const QuanLyTinDang = () => {
                                             <td>{post.id}</td>
                                             <td className="fw-medium text-truncate" style={{maxWidth: '250px'}}>{post.tieu_de}</td>
                                             <td className="text-danger fw-bold">
-                                                {Number(post.gia || post.gia_thue).toLocaleString()} đ
+                                                {Number(post.gia_thue || post.gia_thue).toLocaleString()} đ
                                             </td>
                                             <td>{post.dien_tich} m²</td>
                                             <td>
