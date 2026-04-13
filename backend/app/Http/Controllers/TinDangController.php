@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TinDang;
+use App\Models\HinhAnhTin;
 use Illuminate\Http\Request;
 use App\Http\Requests\TaoTinDangRequest;
 
@@ -35,66 +36,74 @@ class TinDangController extends Controller
     }
 
     // POST /api/tao-tin-dang
-public function taoTinDang(TaoTinDangRequest $request)
-{
-    $data = $request->validated();
+    public function taoTinDang(TaoTinDangRequest $request)
+    {
+        $data = $request->validated();
 
-    $data['trang_thai'] = 'hoat_dong';
-    $data['luot_xem'] = 0;
-    $data['ngay_dang'] = now();
+        $data['trang_thai'] = 'hoat_dong';
+        $data['luot_xem'] = 0;
+        $data['ngay_dang'] = now();
 
-    $tin = TinDang::create($data);
+        $tin = TinDang::create($data);
 
-    return response()->json([
-        'message'=>'Tạo tin đăng thành công',
-        'data'=>$tin
-    ],201);
-}
+        return response()->json([
+            'message'=>'Tạo tin đăng thành công',
+            'data'=>$tin
+        ],201);
+    }
 
     // GET /api/tin-dang-cua-toi/{ma_chu_nha}
-public function tinDangCuaToi($ma_chu_nha)
-{
-    $tinDang = TinDang::where('ma_chu_nha',$ma_chu_nha)
-        ->orderBy('id','desc')
-        ->get();
+    public function tinDangCuaToi($ma_chu_nha)
+    {
+        $tinDang = TinDang::with('hinhAnh')
+            ->where('ma_chu_nha',$ma_chu_nha)
+            ->orderBy('id','desc')
+            ->get();
 
-    return response()->json([
-        "data"=>$tinDang
-    ]);
-}
-// PUT /api/cap-nhat-tin-dang/{id}
-public function capNhatTinDang(Request $request, $id)
-{
-    $tin = TinDang::find($id);
-
-    if(!$tin){
         return response()->json([
-            "message"=>"Tin đăng không tồn tại"
-        ],404);
+            "data"=>$tinDang
+        ]);
     }
 
-    $tin->update($request->all());
+    // PUT /api/cap-nhat-tin-dang/{id}
+    public function capNhatTinDang(Request $request, $id)
+    {
+        $tin = TinDang::find($id);
 
-    return response()->json([
-        "message"=>"Cập nhật tin đăng thành công",
-        "data"=>$tin
-    ]);
-}
-// DELETE /api/xoa-tin-dang/{id}
-public function xoaTinDang($id)
-{
-    $tin = TinDang::find($id);
+        if(!$tin){
+            return response()->json([
+                "message"=>"Tin đăng không tồn tại"
+            ],404);
+        }
 
-    if(!$tin){
+        $tin->update($request->all());
+
         return response()->json([
-            "message"=>"Tin đăng không tồn tại"
-        ],404);
+            "message"=>"Cập nhật tin đăng thành công",
+            "data"=>$tin
+        ]);
     }
 
-    $tin->delete();
+    // DELETE /api/xoa-tin-dang/{id}
+    public function xoaTinDang($id)
+    {
+        $tin = TinDang::find($id);
 
-    return response()->json([
-        "message"=>"Xóa tin đăng thành công"
-    ]);
-}
+        if(!$tin){
+            return response()->json([
+                "message"=>"Tin đăng không tồn tại"
+            ],404);
+        }
+
+        // xóa ảnh liên quan
+        HinhAnhTin::where('ma_tin_dang',$id)->delete();
+
+        // xóa tin
+        $tin->delete();
+
+        return response()->json([
+            "message"=>"Xóa tin đăng thành công"
+        ]);
+    }
+
 }

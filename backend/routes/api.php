@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
+use App\Http\Controllers\HinhAnhTinController;
 
 /*
 |--------------------------------------------------------------------------
@@ -98,8 +99,20 @@ Route::put('/cap-nhat-nguoi-dung/{id}',
 Route::delete('/xoa-nguoi-dung/{id}',
 [NguoiDungController::class,'xoaNguoiDung']);
 
-Route::put('/cap-nhat-tin-dang/{id}',
-[TinDangController::class,'capNhatTinDang']);
+/*
+|--------------------------------------------------------------------------
+| HÌNH ẢNH TIN ĐĂNG
+|--------------------------------------------------------------------------
+*/
 
-Route::delete('/xoa-tin-dang/{id}',
-[TinDangController::class,'xoaTinDang']);
+Route::get('/anh-tin/{ma_tin_dang}',
+[HinhAnhTinController::class,'danhSachAnh']);
+
+Route::post('/them-anh-tin',
+[HinhAnhTinController::class,'themAnh']);
+
+Route::put('/cap-nhat-anh-tin/{id}',
+[HinhAnhTinController::class,'capNhatAnh']);
+
+Route::delete('/xoa-anh-tin/{id}',
+[HinhAnhTinController::class,'xoaAnh']);
