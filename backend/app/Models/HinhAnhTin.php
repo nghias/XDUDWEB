@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class HinhAnhTin extends Model
 {
     protected $table = 'hinh_anh_tin';
+    public $timestamps = false;
 
     protected $fillable = [
         'ma_tin_dang',
@@ -16,6 +17,6 @@ class HinhAnhTin extends Model
 
     public function tinDang()
     {
-        return $this->belongsTo(TinDang::class,'ma_tin_dang');
+        return $this->belongsTo(TinDang::class,'ma_tin_dang','id');
     }
 }

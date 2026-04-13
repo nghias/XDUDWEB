@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TinDang;
+use App\Models\HinhAnhTin;
 use Illuminate\Http\Request;
 use App\Http\Requests\TaoTinDangRequest;
 
@@ -46,14 +47,29 @@ class TinDangController extends Controller
         $tin = TinDang::create($data);
 
         return response()->json([
+
+            'message'=>'Tạo tin đăng thành công',
+            'data'=>$tin
+        ],201);
+
             'message' => 'Tạo tin đăng thành công',
             'data' => $tin
         ], 201);
+
     }
 
     // GET /api/tin-dang-cua-toi/{ma_chu_nha}
     public function tinDangCuaToi($ma_chu_nha)
     {
+
+        $tinDang = TinDang::with('hinhAnh')
+            ->where('ma_chu_nha',$ma_chu_nha)
+            ->orderBy('id','desc')
+            ->get();
+
+        return response()->json([
+            "data"=>$tinDang
+
         $tinDang = TinDang::where('ma_chu_nha', $ma_chu_nha)
             ->orderBy('id', 'desc')
             ->get();
@@ -78,12 +94,31 @@ class TinDangController extends Controller
         return response()->json([
             "message" => "Cập nhật tin đăng thành công",
             "data" => $tin
+
         ]);
     }
     // DELETE /api/xoa-tin-dang/{id}
     public function xoaTinDang($id)
     {
         $tin = TinDang::find($id);
+
+
+    // PUT /api/cap-nhat-tin-dang/{id}
+    public function capNhatTinDang(Request $request, $id)
+    {
+        $tin = TinDang::find($id);
+
+        if(!$tin){
+            return response()->json([
+                "message"=>"Tin đăng không tồn tại"
+            ],404);
+        }
+
+        $tin->update($request->all());
+
+        return response()->json([
+            "message"=>"Cập nhật tin đăng thành công",
+            "data"=>$tin
 
         if (!$tin) {
             return response()->json([
@@ -95,6 +130,7 @@ class TinDangController extends Controller
 
         return response()->json([
             "message" => "Xóa tin đăng thành công"
+
         ]);
     }
     public function timKiemNangCao(Request $request)
@@ -124,6 +160,31 @@ class TinDangController extends Controller
         if ($request->filled('dien_tich_den')) {
             $query->where('dien_tich', '<=', $request->dien_tich_den);
         }
+
+
+    // DELETE /api/xoa-tin-dang/{id}
+    public function xoaTinDang($id)
+    {
+        $tin = TinDang::find($id);
+
+        if(!$tin){
+            return response()->json([
+                "message"=>"Tin đăng không tồn tại"
+            ],404);
+        }
+
+        // xóa ảnh liên quan
+        HinhAnhTin::where('ma_tin_dang',$id)->delete();
+
+        // xóa tin
+        $tin->delete();
+
+        return response()->json([
+            "message"=>"Xóa tin đăng thành công"
+        ]);
+    }
+
+}
 
         // 3. Tìm theo GIÁ THUÊ (từ ... đến ...)
         if ($request->filled('gia_tu')) {
@@ -163,3 +224,4 @@ class TinDangController extends Controller
         ], 200);
     }
 }
+

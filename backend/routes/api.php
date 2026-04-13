@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
+use App\Http\Controllers\HinhAnhTinController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,6 +109,40 @@ Route::get(
 |--------------------------------------------------------------------------
 */
 
+
+Route::get('/tat-ca-nguoi-dung',
+[NguoiDungController::class,'tatCaNguoiDung']);
+
+Route::get('/chi-tiet-nguoi-dung/{id}',
+[NguoiDungController::class,'chiTietNguoiDung']);
+
+Route::post('/tao-nguoi-dung',
+[NguoiDungController::class,'taoNguoiDung']);
+
+Route::put('/cap-nhat-nguoi-dung/{id}',
+[NguoiDungController::class,'capNhatNguoiDung']);
+
+Route::delete('/xoa-nguoi-dung/{id}',
+[NguoiDungController::class,'xoaNguoiDung']);
+
+/*
+|--------------------------------------------------------------------------
+| HÌNH ẢNH TIN ĐĂNG
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/anh-tin/{ma_tin_dang}',
+[HinhAnhTinController::class,'danhSachAnh']);
+
+Route::post('/them-anh-tin',
+[HinhAnhTinController::class,'themAnh']);
+
+Route::put('/cap-nhat-anh-tin/{id}',
+[HinhAnhTinController::class,'capNhatAnh']);
+
+Route::delete('/xoa-anh-tin/{id}',
+[HinhAnhTinController::class,'xoaAnh']);
+
 Route::get(
     '/tat-ca-nguoi-dung',
     [NguoiDungController::class, 'tatCaNguoiDung']
@@ -142,3 +177,4 @@ Route::delete(
     '/xoa-tin-dang/{id}',
     [TinDangController::class, 'xoaTinDang']
 );
+
