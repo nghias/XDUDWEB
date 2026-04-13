@@ -24,4 +24,9 @@ class NguoiDung extends Model
     protected $hidden = [
         'mat_khau'
     ];
+
+    public function tinDang()
+    {
+        return $this->hasMany(TinDang::class,'ma_chu_nha','id');
+    }
 }
