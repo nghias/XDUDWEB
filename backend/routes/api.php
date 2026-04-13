@@ -1,164 +1,99 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+
 use App\Http\Controllers\AuthController;
-
-use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\TinDangController;
+use App\Http\Controllers\TinNhanController;
+use App\Http\Controllers\NguoiDungController;
 
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\TinDangController as AdminTinDangController;
-use App\Http\Controllers\Admin\DichVuController;
-
-Route::prefix('admin')->group(function () {
-    
-    // 1. Quản lý người dùng (nguoi_dung)
-    //  AdminUserController
-    Route::get('users', [AdminUserController::class, 'index']);
-    Route::post('users/{id}/toggle-status', [AdminUserController::class, 'toggleStatus']);// Khóa/Mở khóa
-    Route::delete('users/{id}', [AdminUserController::class, 'destroy']);// Xóa người dùng
-
-    // 2. Quản lý thông tin đăng (tin_dang)
-    //  AdminTinDangController
-    Route::get('tin-dang', [AdminTinDangController::class, 'index']);
-    Route::post('tin-dang/{id}/duyet', [AdminTinDangController::class, 'duyetTin']);// Duyệt tin/Từ chối
-    Route::delete('tin-dang/{id}', [AdminTinDangController::class, 'destroy']);// Xóa tin
-    
-});
-Route::get(
-    '/tat-ca-tin-dang',
-    [TinDangController::class, 'tatCaTinDang']
-);
-
-Route::get(
-    '/chi-tiet-tin-dang/{id}',
-    [TinDangController::class, 'chiTietTinDang']
-);
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/change-password', [AuthController::class, 'changePassword']); // Thêm dòng này
-});
-
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-
-Route::post(
-    '/tao-tin-dang',
-    [TinDangController::class, 'taoTinDang']
-);
-
-Route::put(
-    '/cap-nhat-tin-dang/{id}',
-    [TinDangController::class, 'capNhatTinDang']
-);
-
-Route::delete(
-    '/xoa-tin-dang/{id}',
-    [TinDangController::class, 'xoaTinDang']
-);
-
-Route::get(
-    '/tin-dang-cua-toi/{ma_chu_nha}',
-    [TinDangController::class, 'tinDangCuaToi']
-);
-
-Route::get(
-    '/tat-ca-tin-nhan',
-    [TinNhanController::class, 'tatCaTinNhan']
-);
-
-Route::get(
-    '/chi-tiet-tin-nhan/{id}',
-    [TinNhanController::class, 'chiTietTinNhan']
-);
-
-Route::post(
-    '/gui-tin-nhan',
-    [TinNhanController::class, 'guiTinNhan']
-);
-
-Route::delete(
-    '/xoa-tin-nhan/{id}',
-    [TinNhanController::class, 'xoaTinNhan']
-);
-
-Route::get(
-    '/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
-    [TinNhanController::class, 'cuocTroChuyen']
-);
-
-Route::get('/messages', [TinNhanController::class, 'index']);
-Route::post('/messages', [TinNhanController::class, 'store']);
-
-Route::post('/messages', [TinNhanController::class, 'send']);
-Route::get('/messages/{user_id}', [TinNhanController::class, 'getMessages']);
-
-
-// Testtttttt
-
-
-
-
-
-
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
 
 Route::post('/register', [AuthController::class,'register']);
 Route::post('/login', [AuthController::class,'login']);
+Route::post('/forgot-password', [AuthController::class,'forgotPassword']);
+Route::post('/reset-password', [AuthController::class,'resetPassword']);
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/logout', [AuthController::class,'logout']);
+    Route::post('/change-password', [AuthController::class,'changePassword']);
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| TIN ĐĂNG
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/tat-ca-tin-dang',[TinDangController::class,'tatCaTinDang']);
 
 Route::get('/chi-tiet-tin-dang/{id}',
 [TinDangController::class,'chiTietTinDang']);
 
+Route::post('/tao-tin-dang',
+[TinDangController::class,'taoTinDang']);
+
+Route::put('/cap-nhat-tin-dang/{id}',
+[TinDangController::class,'capNhatTinDang']);
+
+Route::delete('/xoa-tin-dang/{id}',
+[TinDangController::class,'xoaTinDang']);
+
 Route::get('/tin-dang-cua-toi/{ma_chu_nha}',
 [TinDangController::class,'tinDangCuaToi']);
 
 
+/*
+|--------------------------------------------------------------------------
+| TIN NHẮN
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/tat-ca-tin-nhan',
+[TinNhanController::class,'tatCaTinNhan']);
+
+Route::get('/chi-tiet-tin-nhan/{id}',
+[TinNhanController::class,'chiTietTinNhan']);
 
 Route::post('/gui-tin-nhan',
 [TinNhanController::class,'guiTinNhan']);
 
+Route::delete('/xoa-tin-nhan/{id}',
+[TinNhanController::class,'xoaTinNhan']);
+
 Route::get('/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
 [TinNhanController::class,'cuocTroChuyen']);
 
-use App\Http\Controllers\NguoiDungController;
 
-Route::get(
-'/tat-ca-nguoi-dung',
-[NguoiDungController::class,'tatCaNguoiDung']
-);
+/*
+|--------------------------------------------------------------------------
+| NGƯỜI DÙNG
+|--------------------------------------------------------------------------
+*/
 
-Route::get(
-'/chi-tiet-nguoi-dung/{id}',
-[NguoiDungController::class,'chiTietNguoiDung']
-);
+Route::get('/tat-ca-nguoi-dung',
+[NguoiDungController::class,'tatCaNguoiDung']);
 
-Route::post(
-'/tao-nguoi-dung',
-[NguoiDungController::class,'taoNguoiDung']
-);
+Route::get('/chi-tiet-nguoi-dung/{id}',
+[NguoiDungController::class,'chiTietNguoiDung']);
 
-Route::put(
-'/cap-nhat-nguoi-dung/{id}',
-[NguoiDungController::class,'capNhatNguoiDung']
-);
+Route::post('/tao-nguoi-dung',
+[NguoiDungController::class,'taoNguoiDung']);
 
-Route::delete(
-'/xoa-nguoi-dung/{id}',
-[NguoiDungController::class,'xoaNguoiDung']
-);
+Route::put('/cap-nhat-nguoi-dung/{id}',
+[NguoiDungController::class,'capNhatNguoiDung']);
+
+Route::delete('/xoa-nguoi-dung/{id}',
+[NguoiDungController::class,'xoaNguoiDung']);

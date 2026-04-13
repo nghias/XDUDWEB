@@ -19,15 +19,13 @@ class TaoTinDangRequest extends FormRequest
 
             'mo_ta' => 'required|string',
 
-            'gia' => 'required|integer|min:0',
+            'gia_thue' => 'required|numeric|min:0',
 
-            'dien_tich' => 'required|integer|min:1',
+            'dien_tich' => 'required|numeric|min:1',
 
-            'nguoi_dung_id' => 'required|exists:nguoi_dung,id',
+            'ma_chu_nha' => 'required|exists:nguoi_dung,id',
 
-            'loai_phong_id' => 'required|exists:loai_phong,id',
-
-            'vi_tri_id' => 'required|exists:vi_tri,ma_vi_tri',
+            'ma_loai_phong' => 'required|exists:loai_phong,id',
 
         ];
     }
