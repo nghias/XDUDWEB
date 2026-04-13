@@ -97,3 +97,9 @@ Route::put('/cap-nhat-nguoi-dung/{id}',
 
 Route::delete('/xoa-nguoi-dung/{id}',
 [NguoiDungController::class,'xoaNguoiDung']);
+
+Route::put('/cap-nhat-tin-dang/{id}',
+[TinDangController::class,'capNhatTinDang']);
+
+Route::delete('/xoa-tin-dang/{id}',
+[TinDangController::class,'xoaTinDang']);

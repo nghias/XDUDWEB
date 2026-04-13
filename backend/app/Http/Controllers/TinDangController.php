@@ -62,5 +62,39 @@ public function tinDangCuaToi($ma_chu_nha)
         "data"=>$tinDang
     ]);
 }
+// PUT /api/cap-nhat-tin-dang/{id}
+public function capNhatTinDang(Request $request, $id)
+{
+    $tin = TinDang::find($id);
 
+    if(!$tin){
+        return response()->json([
+            "message"=>"Tin đăng không tồn tại"
+        ],404);
+    }
+
+    $tin->update($request->all());
+
+    return response()->json([
+        "message"=>"Cập nhật tin đăng thành công",
+        "data"=>$tin
+    ]);
+}
+// DELETE /api/xoa-tin-dang/{id}
+public function xoaTinDang($id)
+{
+    $tin = TinDang::find($id);
+
+    if(!$tin){
+        return response()->json([
+            "message"=>"Tin đăng không tồn tại"
+        ],404);
+    }
+
+    $tin->delete();
+
+    return response()->json([
+        "message"=>"Xóa tin đăng thành công"
+    ]);
+}
 }
