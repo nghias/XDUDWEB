@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\NguoiDung;
+use App\Models\LoaiPhong;
+use App\Models\HinhAnhTin;
+use App\Models\ViTri;
 
 class TinDang extends Model
 {
@@ -35,8 +39,9 @@ class TinDang extends Model
     {
         return $this->hasMany(HinhAnhTin::class,'ma_tin_dang','id');
     }
+
     public function viTri()
     {
-        return $this->hasOne(ViTri::class, 'ma_tin_dang', 'id');
+        return $this->hasOne(ViTri::class,'ma_tin_dang','id');
     }
 }
