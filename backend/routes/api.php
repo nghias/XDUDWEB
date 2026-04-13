@@ -142,39 +142,3 @@ Route::put('/cap-nhat-anh-tin/{id}',
 
 Route::delete('/xoa-anh-tin/{id}',
 [HinhAnhTinController::class,'xoaAnh']);
-
-Route::get(
-    '/tat-ca-nguoi-dung',
-    [NguoiDungController::class, 'tatCaNguoiDung']
-);
-
-Route::get(
-    '/chi-tiet-nguoi-dung/{id}',
-    [NguoiDungController::class, 'chiTietNguoiDung']
-);
-
-Route::post(
-    '/tao-nguoi-dung',
-    [NguoiDungController::class, 'taoNguoiDung']
-);
-
-Route::put(
-    '/cap-nhat-nguoi-dung/{id}',
-    [NguoiDungController::class, 'capNhatNguoiDung']
-);
-
-Route::delete(
-    '/xoa-nguoi-dung/{id}',
-    [NguoiDungController::class, 'xoaNguoiDung']
-);
-
-Route::put(
-    '/cap-nhat-tin-dang/{id}',
-    [TinDangController::class, 'capNhatTinDang']
-);
-
-Route::delete(
-    '/xoa-tin-dang/{id}',
-    [TinDangController::class, 'xoaTinDang']
-);
-
