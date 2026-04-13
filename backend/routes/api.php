@@ -40,34 +40,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/tat-ca-tin-dang', [TinDangController::class, 'tatCaTinDang']);
 
-Route::get(
-    '/chi-tiet-tin-dang/{id}',
-    [TinDangController::class, 'chiTietTinDang']
+Route::get('/chi-tiet-tin-dang/{id}',
+[TinDangController::class, 'chiTietTinDang']
 );
 
-Route::post(
-    '/tao-tin-dang',
-    [TinDangController::class, 'taoTinDang']
+Route::post('/tao-tin-dang',
+[TinDangController::class, 'taoTinDang']
 );
 
-Route::put(
-    '/cap-nhat-tin-dang/{id}',
-    [TinDangController::class, 'capNhatTinDang']
+Route::put('/cap-nhat-tin-dang/{id}',
+[TinDangController::class, 'capNhatTinDang']
 );
 
-Route::delete(
-    '/xoa-tin-dang/{id}',
-    [TinDangController::class, 'xoaTinDang']
+Route::delete('/xoa-tin-dang/{id}',
+[TinDangController::class, 'xoaTinDang']
 );
 
-Route::get(
-    '/tin-dang-cua-toi/{ma_chu_nha}',
-    [TinDangController::class, 'tinDangCuaToi']
+Route::get('/tin-dang-cua-toi/{ma_chu_nha}',
+[TinDangController::class, 'tinDangCuaToi']
 );
 
-Route::get(
-    '/tim-kiem-tin-dang',
-    [TinDangController::class, 'timKiemNangCao']
+Route::get('/tim-kiem-tin-dang',
+[TinDangController::class, 'timKiemNangCao']
 );
 
 
@@ -77,30 +71,20 @@ Route::get(
 |--------------------------------------------------------------------------
 */
 
-Route::get(
-    '/tat-ca-tin-nhan',
-    [TinNhanController::class, 'tatCaTinNhan']
-);
+Route::get('/tat-ca-tin-nhan',
+[TinNhanController::class, 'tatCaTinNhan']);
 
-Route::get(
-    '/chi-tiet-tin-nhan/{id}',
-    [TinNhanController::class, 'chiTietTinNhan']
-);
+Route::get('/chi-tiet-tin-nhan/{id}',
+[TinNhanController::class, 'chiTietTinNhan']);
 
-Route::post(
-    '/gui-tin-nhan',
-    [TinNhanController::class, 'guiTinNhan']
-);
+Route::post('/gui-tin-nhan',
+[TinNhanController::class, 'guiTinNhan']);
 
-Route::delete(
-    '/xoa-tin-nhan/{id}',
-    [TinNhanController::class, 'xoaTinNhan']
-);
+Route::delete('/xoa-tin-nhan/{id}',
+[TinNhanController::class, 'xoaTinNhan']);
 
-Route::get(
-    '/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
-    [TinNhanController::class, 'cuocTroChuyen']
-);
+Route::get('/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
+[TinNhanController::class, 'cuocTroChuyen']);
 
 
 /*
