@@ -51,25 +51,11 @@ class TinDangController extends Controller
             'message'=>'Tạo tin đăng thành công',
             'data'=>$tin
         ],201);
-
-            'message' => 'Tạo tin đăng thành công',
-            'data' => $tin
-        ], 201);
-
     }
 
     // GET /api/tin-dang-cua-toi/{ma_chu_nha}
     public function tinDangCuaToi($ma_chu_nha)
     {
-
-        $tinDang = TinDang::with('hinhAnh')
-            ->where('ma_chu_nha',$ma_chu_nha)
-            ->orderBy('id','desc')
-            ->get();
-
-        return response()->json([
-            "data"=>$tinDang
-
         $tinDang = TinDang::where('ma_chu_nha', $ma_chu_nha)
             ->orderBy('id', 'desc')
             ->get();
@@ -78,61 +64,25 @@ class TinDangController extends Controller
             "data" => $tinDang
         ]);
     }
-    // PUT /api/cap-nhat-tin-dang/{id}
+   
+      // PUT /api/cap-nhat-tin-dang/{id}
     public function capNhatTinDang(Request $request, $id)
     {
-        $tin = TinDang::find($id);
+     $tin = TinDang::find($id);
 
-        if (!$tin) {
-            return response()->json([
-                "message" => "Tin đăng không tồn tại"
-            ], 404);
-        }
-
-        $tin->update($request->all());
-
+     if(!$tin){
         return response()->json([
-            "message" => "Cập nhật tin đăng thành công",
-            "data" => $tin
-
-        ]);
+            "message"=>"Tin đăng không tồn tại",
+        ],404);
     }
-    // DELETE /api/xoa-tin-dang/{id}
-    public function xoaTinDang($id)
-    {
-        $tin = TinDang::find($id);
 
+     $tin->update($request->all());
 
-    // PUT /api/cap-nhat-tin-dang/{id}
-    public function capNhatTinDang(Request $request, $id)
-    {
-        $tin = TinDang::find($id);
-
-        if(!$tin){
-            return response()->json([
-                "message"=>"Tin đăng không tồn tại"
-            ],404);
-        }
-
-        $tin->update($request->all());
-
-        return response()->json([
-            "message"=>"Cập nhật tin đăng thành công",
-            "data"=>$tin
-
-        if (!$tin) {
-            return response()->json([
-                "message" => "Tin đăng không tồn tại"
-            ], 404);
-        }
-
-        $tin->delete();
-
-        return response()->json([
-            "message" => "Xóa tin đăng thành công"
-
-        ]);
-    }
+     return response()->json([
+        "message"=>"Cập nhật tin đăng thành công",
+        "data"=>$tin
+    ]);
+}
     public function timKiemNangCao(Request $request)
     {
         // Khởi tạo query lấy các tin đăng (kèm theo các thông tin liên quan)
@@ -161,7 +111,7 @@ class TinDangController extends Controller
             $query->where('dien_tich', '<=', $request->dien_tich_den);
         }
 
-
+    }
     // DELETE /api/xoa-tin-dang/{id}
     public function xoaTinDang($id)
     {
@@ -185,7 +135,8 @@ class TinDangController extends Controller
     }
 
 }
-
+{
+    {
         // 3. Tìm theo GIÁ THUÊ (từ ... đến ...)
         if ($request->filled('gia_tu')) {
             $query->where('gia_thue', '>=', $request->gia_tu);
@@ -224,4 +175,3 @@ class TinDangController extends Controller
         ], 200);
     }
 }
-
