@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const Profile = () => {
     const navigate = useNavigate();
     
-    // Khởi tạo state chứa thông tin người dùng
+    // Thêm trạng thái loading để vô hiệu hóa nút khi đang gọi API
+    const [isLoading, setIsLoading] = useState(false);
+    
+    // Khởi tạo state chứa thông tin người dùng (thêm trường id)
     const [formData, setFormData] = useState({
+        id: '',
         ho_ten: '',
         email: '',
         so_dien_thoai: '',
@@ -21,6 +25,7 @@ const Profile = () => {
             if (userSession && userSession !== "undefined") {
                 const userData = JSON.parse(userSession);
                 setFormData({
+                    id: userData.id || '', // Lấy ID để gọi API
                     ho_ten: userData.ho_ten || '',
                     email: userData.email || '',
                     so_dien_thoai: userData.so_dien_thoai || '',
@@ -29,7 +34,6 @@ const Profile = () => {
                     ngay_tao: userData.ngay_tao || ''
                 });
             } else {
-                // Nếu chưa đăng nhập, chuyển hướng về trang login
                 navigate('/login');
             }
         } catch (error) {
@@ -47,10 +51,53 @@ const Profile = () => {
         });
     };
 
-    // Hàm submit (hiện tại chỉ preventDefault vì chưa có API)
-    const handleSubmit = (e) => {
+    // Hàm submit gọi API Cập nhật
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Chức năng cập nhật thông tin đang được phát triển!");
+        
+        if (!formData.id) {
+            alert("Lỗi: Không tìm thấy ID người dùng!");
+            return;
+        }
+
+        setIsLoading(true);
+        const token = localStorage.getItem("auth_token");
+
+        try {
+            // Gọi API PUT theo Backend
+            const response = await fetch(`https://xdudweb-php.onrender.com/api/cap-nhat-nguoi-dung/${formData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Truyền token nếu route yêu cầu bảo mật
+                    'Accept': 'application/json'
+                },
+                // Chỉ gửi lên những thông tin cho phép sửa
+                body: JSON.stringify({
+                    ho_ten: formData.ho_ten,
+                    so_dien_thoai: formData.so_dien_thoai
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Cập nhật thông tin thành công!");
+                
+                // CẬP NHẬT LẠI LOCALSTORAGE
+                // Backend trả về dữ liệu mới trong result.data, ta sẽ lưu đè vào session
+                if (result.data) {
+                    localStorage.setItem("user_session", JSON.stringify(result.data));
+                }
+            } else {
+                alert(result.message || "Cập nhật thất bại. Vui lòng kiểm tra lại!");
+            }
+        } catch (error) {
+            console.error("Lỗi cập nhật profile:", error);
+            alert("Lỗi kết nối server!");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Avatar mặc định nếu user chưa có ảnh
@@ -94,6 +141,7 @@ const Profile = () => {
                                             name="ho_ten"
                                             value={formData.ho_ten}
                                             onChange={handleChange}
+                                            required
                                         />
                                     </div>
 
@@ -105,11 +153,13 @@ const Profile = () => {
                                             className="form-control" 
                                             name="so_dien_thoai"
                                             value={formData.so_dien_thoai}
-                                            onChange={handleChange}
+                                            onChange={(e) => handleChange({ target: { name: 'so_dien_thoai', value: e.target.value.replace(/\D/g, '') } })} // Chỉ cho nhập số
+                                            maxLength="10"
+                                            required
                                         />
                                     </div>
 
-                                    {/* Email (Thường không cho sửa trực tiếp ở đây) */}
+                                    {/* Email (Không cho sửa) */}
                                     <div className="col-md-12 mb-3">
                                         <label className="form-label fw-medium text-secondary">Email</label>
                                         <input 
@@ -157,16 +207,15 @@ const Profile = () => {
 
                                 {/* Nút lưu */}
                                 <div className="d-flex justify-content-end align-items-center">
-                                    <span className="text-danger me-3 small fst-italic">
-                                        * Tính năng lưu tạm thời bị khóa do API đang hoàn thiện.
-                                    </span>
                                     <button 
                                         type="submit" 
                                         className="btn btn-primary px-4 fw-bold"
-                                        disabled // TẠM KHÓA NÚT LƯU
+                                        disabled={isLoading} 
                                         style={{ borderRadius: '8px' }}
                                     >
-                                        Lưu thay đổi
+                                        {isLoading ? (
+                                            <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Đang lưu...</>
+                                        ) : 'Lưu thay đổi'}
                                     </button>
                                 </div>
                             </form>

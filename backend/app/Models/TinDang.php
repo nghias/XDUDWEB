@@ -35,4 +35,8 @@ class TinDang extends Model
     {
         return $this->hasMany(HinhAnhTin::class,'ma_tin_dang','id');
     }
+    public function viTri()
+    {
+        return $this->hasOne(ViTri::class, 'ma_tin_dang', 'id');
+    }
 }
