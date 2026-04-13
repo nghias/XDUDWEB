@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TinNhan extends Model
 {
     protected $table = 'tin_nhan';
+    public $timestamps = false;
 
     protected $fillable = [
         'ma_cuoc_tro_chuyen',
@@ -15,5 +16,8 @@ class TinNhan extends Model
         'da_doc'
     ];
 
-    public $timestamps = false;
+    public function cuocTroChuyen()
+    {
+        return $this->belongsTo(CuocTroChuyen::class,'ma_cuoc_tro_chuyen','id');
+    }
 }

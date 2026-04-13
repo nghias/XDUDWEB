@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css'; // Nhập file CSS tùy chỉnh
+import { useNavigate, Link } from 'react-router-dom'; // Thêm Link để chuyển trang
+import './Login.css';
 
 const Login = () => {
-    const [tenTK, setTenTK] = useState('');
+    const [email, setEmail] = useState('');
     const [matKhau, setMatKhau] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State quản lý xem/ẩn mật khẩu
     const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Hàm xử lý chuyển hướng dựa theo vai trò
     const redirectByRole = (vaiTro) => {
         if (vaiTro === 'quan_tri') {
             navigate('/admin');
         } else if (vaiTro === 'chu_nha' || vaiTro === 'nguoi_tim_phong') {
             navigate('/user');
         } else {
-            // Nếu có role khác không xác định, có thể cho về trang chủ mặc định hoặc báo lỗi
             setError('Vai trò không hợp lệ!');
         }
     };
 
-    // Kiểm tra session khi vừa mở trang (nếu đã đăng nhập thì tự động chuyển hướng, không cần đăng nhập lại)
     useEffect(() => {
         const session = localStorage.getItem('user_session');
         if (session) {
@@ -29,16 +28,15 @@ const Login = () => {
                 const userData = JSON.parse(session);
                 redirectByRole(userData.vai_tro);
             } catch (e) {
-                // Xử lý trường hợp data trong localStorage bị lỗi format
                 localStorage.removeItem('user_session');
             }
         }
     }, [navigate]);
 
-    // Xử lý submit form
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccessMsg('');
         setIsLoading(true);
 
         try {
@@ -46,68 +44,121 @@ const Login = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
-                // Gửi param TenTK và MatKhau đến server
-                body: JSON.stringify({ TenTK: tenTK, MatKhau: matKhau })
+                body: JSON.stringify({ 
+                    email: email, 
+                    mat_khau: matKhau 
+                })
             });
 
             const result = await response.json();
 
-            if (result.success) {
-                // Đăng nhập đúng: Lưu object data vào localStorage
+            if (response.ok && result.success) {
                 localStorage.setItem('user_session', JSON.stringify(result.data));
+                localStorage.setItem('auth_token', result.token);
                 
-                // Chuyển hướng đến trang thích hợp
-                redirectByRole(result.data.vai_tro);
+                setSuccessMsg(result.message || 'Đăng nhập thành công!');
+                
+                setTimeout(() => {
+                    redirectByRole(result.data.vai_tro);
+                }, 1500);
+
             } else {
-                // Đăng nhập sai: Hiển thị lỗi từ server trả về
-                setError(result.message || 'Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!');
+                if (response.status === 422 && result.errors) {
+                    const firstErrorKey = Object.keys(result.errors)[0];
+                    setError(result.errors[firstErrorKey][0]);
+                } else {
+                    setError(result.message || 'Sai tài khoản hoặc mật khẩu. Vui lòng thử lại!');
+                }
             }
         } catch (err) {
             setError('Lỗi kết nối đến server. Vui lòng kiểm tra lại mạng hoặc thử lại sau.');
-            console.error("Login Error:", err);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        // Sử dụng class CSS tùy chỉnh để căn giữa triệt để
-        <div className="login-full-screen-container">
-            {/* Thẻ card và form sử dụng các class Bootstrap như cũ để tận dụng kiểu dáng */}
-            <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}>
-                <h2 className="text-center mb-4 text-dark">Đăng Nhập</h2>
+        <div className="login-full-screen-container bg-light d-flex justify-content-center align-items-center min-vh-100">
+            <div className="card p-4 shadow-sm border-0" style={{ width: '100%', maxWidth: '420px', borderRadius: '12px' }}>
+                <h2 className="text-center mb-4 text-dark fw-bold">Đăng Nhập</h2>
                 
                 {error && <div className="alert alert-danger text-center p-2 mb-3">{error}</div>}
+                {successMsg && <div className="alert alert-success text-center p-2 mb-3">{successMsg}</div>}
 
                 <form onSubmit={handleLogin} className="d-flex flex-column">
+                    {/* Input Email */}
                     <div className="mb-3">
-                        <label className="form-label">Tài khoản (Email):</label>
+                        <label className="form-label text-secondary fw-medium">Tài khoản (Email):</label>
                         <input 
-                            type="text" 
-                            className="form-control"
-                            value={tenTK}
-                            onChange={(e) => setTenTK(e.target.value)}
+                            type="email" 
+                            className="form-control py-2"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                             placeholder="Nhập email của bạn"
+                            disabled={isLoading || successMsg}
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label className="form-label">Mật khẩu:</label>
-                        <input 
-                            type="password" 
-                            className="form-control"
-                            value={matKhau}
-                            onChange={(e) => setMatKhau(e.target.value)}
-                            required
-                            placeholder="Nhập mật khẩu"
-                        />
+                    {/* Input Mật khẩu có nút Xem/Ẩn */}
+                    <div className="mb-2">
+                        <label className="form-label text-secondary fw-medium">Mật khẩu:</label>
+                        <div className="input-group">
+                            <input 
+                                type={showPassword ? "text" : "password"} 
+                                className="form-control py-2"
+                                value={matKhau}
+                                onChange={(e) => setMatKhau(e.target.value)}
+                                required
+                                placeholder="Nhập mật khẩu"
+                                disabled={isLoading || successMsg}
+                            />
+                            <button 
+                                type="button" 
+                                className="btn btn-outline-secondary px-3"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLoading || successMsg}
+                                tabIndex="-1" // Không focus vào nút này khi bấm Tab
+                            >
+                                {/* Dùng icon Bootstrap để hiển thị mắt mở/đóng */}
+                                <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <button type="submit" disabled={isLoading} className="btn btn-primary w-100 fw-bold py-2">
-                        {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
+                    {/* Quên mật khẩu */}
+                    <div className="d-flex justify-content-end mb-4">
+                        <Link to="/forgot-password" className="text-decoration-none text-primary small fw-medium">
+                            Quên mật khẩu?
+                        </Link>
+                    </div>
+
+                    {/* Nút Đăng nhập */}
+                    <button 
+                        type="submit" 
+                        disabled={isLoading || successMsg} 
+                        className={`btn w-100 fw-bold py-2 ${successMsg ? 'btn-success' : 'btn-primary'}`}
+                        style={{ borderRadius: '8px' }}
+                    >
+                        {isLoading ? 'Đang xử lý...' : (successMsg ? 'Đang chuyển hướng...' : 'Đăng nhập')}
                     </button>
+
+                    {/* Đăng ký */}
+                    <div className="text-center mt-4 pt-3 border-top">
+                        <span className="text-muted small">Bạn chưa có tài khoản? </span>
+                        <Link to="/register" className="text-decoration-none text-primary fw-bold small">
+                            Đăng ký ngay
+                        </Link>
+                    </div>
+
+                    {/* Nút quay lại */}
+                    <div className="text-center mt-4 pt-3 border-top">
+                        <Link to="/" className="text-decoration-none text-secondary small fw-medium">
+                            <i className="bi bi-arrow-left me-1"></i> Quay lại
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

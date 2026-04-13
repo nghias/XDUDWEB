@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 //bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -6,9 +6,19 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // GENERAL
 import Login from './page/general/Login';
+import Register from './page/general/Register'; 
+import ForgotPassword from './page/general/ForgotPassword'; 
+import ChangePassword from './page/general/ChangePassword';
+import Profile from './page/general/Profile'; 
+
+import Header from './components/Header'; 
+import Footer from './components/Footer'; 
 
 // USER
 import Home from './page/user/Home';
+import Search from './page/user/Search';
+import ChiTietTinDang from './page/user/ChiTietTinDang';
+import QuanLyTinDang from './page/user/QuanLyTinDang'; // Đã thêm Quản lý tin đăng
 
 // ADMIN
 import AdminLayout from './components/admin/AdminLayout';
@@ -18,25 +28,34 @@ import AdminPost from './components/admin/AdminPost';
 import PackageAdmin from './components/admin/PackageAdmin';
 import SystemStats from './components/admin/SystemStats';
 
+// Component Layout dùng chung cho User (Có Header, Footer)
+const MainLayout = () => {
+  return (
+    <div className="d-flex flex-column min-vh-100 bg-light">
+      <Header />
+      <main className="flex-grow-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 // Component kiểm tra quyền truy cập (Bảo vệ Route)
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const session = localStorage.getItem('user_session');
   
-  // Chưa đăng nhập thì đá về trang đăng nhập
   if (!session) {
     return <Navigate to="/login" replace />;
   }
 
   const userData = JSON.parse(session);
   
-  // Đã đăng nhập nhưng không có quyền truy cập route này
   if (allowedRoles && !allowedRoles.includes(userData.vai_tro)) {
-    // Tự động điều hướng về đúng không gian làm việc của role đó
     if (userData.vai_tro === 'quan_tri') return <Navigate to="/admin" replace />;
-    return <Navigate to="/user" replace />; 
+    return <Navigate to="/" replace />; 
   }
 
-  // Hợp lệ thì cho phép render component con
   return children;
 };
 
@@ -45,27 +64,48 @@ function App() {
     <Router>
       <Routes>
 
-        {/* --- XÁC THỰC --- */}
-        {/* Truy cập link host sẽ tự động điều hướng sang login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* --- NHÓM 1: KHÔNG CÓ LAYOUT (Không có Header/Footer) --- */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* --- USER --- */}
-        <Route 
-          path="/user" 
-          element={
-            // Cho phép người tìm phòng (và có thể cả chủ nhà) truy cập /user
-            <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha']}>
-              <Home />
-            </ProtectedRoute>
-          } 
-        />
+        {/* --- NHÓM 2: PUBLIC CÓ LAYOUT (Được bọc bởi Header/Footer) --- */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} /> 
+          <Route path="/chi-tiet-tin-dang/:id" element={<ChiTietTinDang />} />
+          <Route path="/user" element={<Navigate to="/" replace />} />
 
-        {/* --- ADMIN --- */}
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/change-password" 
+            element={
+              <ProtectedRoute allowedRoles={['nguoi_tim_phong', 'chu_nha', 'quan_tri']}>
+                <ChangePassword />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/quan-ly-tin-dang" 
+            element={
+              <ProtectedRoute allowedRoles={['chu_nha', 'quan_tri']}>
+                <QuanLyTinDang />
+              </ProtectedRoute>
+            } 
+          />
+        </Route>
+
+        {/* --- NHÓM 3: ADMIN --- */}
         <Route 
           path="/admin" 
           element={
-            // Chỉ cho phép admin truy cập cụm route này
             <ProtectedRoute allowedRoles={['quan_tri']}>
               <AdminLayout />
             </ProtectedRoute>
@@ -79,7 +119,7 @@ function App() {
         </Route>
 
         {/* --- NOT FOUND --- */}
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="*" element={<h1 className="text-center mt-5">404 Not Found</h1>} />
 
       </Routes>
     </Router>

@@ -1,0 +1,5 @@
+$kind: http-request
+name: user
+url: "{{base_url}}/admin/users"
+method: GET
+order: 1775568766856
