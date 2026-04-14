@@ -8,6 +8,7 @@ use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\HinhAnhTinController;
+use App\Http\Controllers\DatPhongController;
 use App\Http\Controllers\Admin\GoiDichVuController;
 
 /*
@@ -65,7 +66,6 @@ Route::get('/tim-kiem-tin-dang',
 [TinDangController::class, 'timKiemNangCao']
 );
 
-
 /*
 |--------------------------------------------------------------------------
 | TIN NHẮN
@@ -87,13 +87,11 @@ Route::delete('/xoa-tin-nhan/{id}',
 Route::get('/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
 [TinNhanController::class, 'cuocTroChuyen']);
 
-
 /*
 |--------------------------------------------------------------------------
 | NGƯỜI DÙNG
 |--------------------------------------------------------------------------
 */
-
 
 Route::get('/tat-ca-nguoi-dung',
 [NguoiDungController::class,'tatCaNguoiDung']);
@@ -128,15 +126,35 @@ Route::put('/cap-nhat-anh-tin/{id}',
 Route::delete('/xoa-anh-tin/{id}',
 [HinhAnhTinController::class,'xoaAnh']);
 
+/*
+|--------------------------------------------------------------------------
+| ĐẶT PHÒNG
+|--------------------------------------------------------------------------
+*/
 
+Route::post('/dat-phong',[DatPhongController::class,'datPhong']);
+
+Route::get('/danh-sach-dat-phong',
+[DatPhongController::class,'danhSachDatPhong']);
+
+Route::get('/dat-phong-cua-toi/{ma_nguoi_dat}',
+[DatPhongController::class,'datPhongCuaToi']);
+
+Route::put('/xac-nhan-dat-phong/{id}',
+[DatPhongController::class,'xacNhan']);
+
+Route::delete('/huy-dat-phong/{id}',
+[DatPhongController::class,'huyDatPhong']);
 
 /*
 |--------------------------------------------------------------------------
 | DichVu
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('admin/goidichvu')->group(function () {
     Route::get('/', [GoiDichVuController::class, 'index']);      
     Route::post('/', [GoiDichVuController::class, 'store']);     
     Route::put('/{id}', [GoiDichVuController::class, 'update']); 
 }); 
+
