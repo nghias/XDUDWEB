@@ -82,8 +82,6 @@ const Header = () => {
     ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ho_ten)}&background=0D8ABC&color=fff`
     : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-  const logoUrl = "https://cdn-icons-png.flaticon.com/512/1946/1946436.png";
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -123,8 +121,16 @@ const Header = () => {
     <header className="sticky-top shadow-sm bg-white border-bottom">
       <div className="container py-2">
         <div className="d-flex align-items-center justify-content-between">
+          
+          {/* LOGO MỚI (SVG) */}
           <Link to="/" className="navbar-brand d-flex align-items-center gap-2 mb-0 text-decoration-none">
-            <img src={logoUrl} alt="Logo" width="40" height="40" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" className="flex-shrink-0">
+              <path d="M50 5 C30 5 15 20 15 40 C15 65 50 95 50 95 C50 95 85 65 85 40 C85 20 70 5 50 5 Z" fill="#0D8ABC" />
+              <circle cx="50" cy="38" r="22" fill="#ffffff" />
+              <path d="M50 22 L36 34 L40 34 L40 48 L46 48 L46 40 L54 40 L54 48 L60 48 L60 34 L64 34 Z" fill="#0D8ABC" />
+              <circle cx="50" cy="38" r="6" fill="none" stroke="#FF8C00" strokeWidth="2.5" />
+              <line x1="54" y1="42" x2="58" y2="46" stroke="#FF8C00" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
             <span className="fw-bold text-primary d-none d-md-block">Tìm Trọ Trực Tuyến</span>
           </Link>
 
@@ -161,24 +167,23 @@ const Header = () => {
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            <ul className="navbar-nav d-none d-lg-flex flex-row gap-4 me-2 mb-0">
-              {userData?.vai_tro === 'chu_nha' ? (
+            <ul className="navbar-nav d-none d-lg-flex flex-row gap-4 me-3 mb-0 align-items-center">
+              
+              {/* XEM TIN ĐĂNG: Mọi quyền đều xem được */}
+              <li className="nav-item">
+                <Link className="nav-link fw-semibold text-dark" to="/">
+                  Xem tin đăng thuê trọ
+                </Link>
+              </li>
+
+              {/* QUẢN LÝ TIN ĐĂNG: Chỉ hiện với Chủ nhà hoặc Admin */}
+              {(userData?.vai_tro === 'chu_nha' || userData?.vai_tro === 'quan_tri') && (
                 <li className="nav-item">
                   <Link className="nav-link fw-semibold text-primary" to="/quan-ly-tin-dang">
                     <i className="bi bi-list-task me-1"></i> Quản lý tin đăng
                   </Link>
                 </li>
-              ) : (
-                <li className="nav-item">
-                  <Link className="nav-link fw-semibold text-dark" to="#">Chức năng 1</Link>
-                </li>
               )}
-              <li className="nav-item">
-                <Link className="nav-link fw-semibold text-dark" to="#">Chức năng 2</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link fw-semibold text-dark" to="#">Chức năng 3</Link>
-              </li>
             </ul>
 
             <div ref={dropdownRef}>

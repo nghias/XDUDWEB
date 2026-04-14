@@ -89,7 +89,7 @@ const QuanLyTinDang = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json' // Cần thiết để bắt lỗi 422 JSON
+                    'Accept': 'application/json' 
                 },
                 body: JSON.stringify(payload)
             });
@@ -100,7 +100,7 @@ const QuanLyTinDang = () => {
             if (res.ok || res.status === 201) {
                 alert(isEditing ? 'Cập nhật thành công!' : 'Thêm mới thành công!');
                 setShowModal(false);
-                fetchMyPosts(); // Refresh danh sách
+                fetchMyPosts(); 
             } 
             // Xử lý lỗi 422 (Validation từ Laravel)
             else if (res.status === 422) {
@@ -165,7 +165,7 @@ const QuanLyTinDang = () => {
             id: post.id,
             tieu_de: post.tieu_de,
             mo_ta: post.mo_ta,
-            gia_thue: post.gia || post.gia_thue, // Xử lý nếu backend trả về 'gia'
+            gia_thue: post.gia || post.gia_thue,
             dien_tich: post.dien_tich,
             ma_loai_phong: post.loai_phong_id || post.ma_loai_phong, 
             trang_thai: post.trang_thai,
@@ -184,8 +184,13 @@ const QuanLyTinDang = () => {
         <div className="container py-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3 className="fw-bold text-primary">Quản lý tin đăng</h3>
-                <button className="btn btn-primary fw-bold" onClick={openAddModal}>
-                    <i className="bi bi-plus-circle me-2"></i>Thêm tin mới
+                {/* NÚT ĐĂNG TIN ĐÃ ĐƯỢC LÀM NỔI BẬT */}
+                <button 
+                    className="btn btn-warning text-dark fw-bold shadow-sm px-4 py-2" 
+                    style={{ borderRadius: '8px' }}
+                    onClick={openAddModal}
+                >
+                    <i className="bi bi-plus-circle me-2"></i> + Đăng tin
                 </button>
             </div>
 
@@ -302,7 +307,7 @@ const QuanLyTinDang = () => {
                                 </div>
                                 <div className="modal-footer bg-light">
                                     <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Hủy</button>
-                                    <button type="submit" className="btn btn-primary">{isEditing ? 'Lưu thay đổi' : 'Tạo tin'}</button>
+                                    <button type="submit" className="btn btn-warning fw-bold">{isEditing ? 'Lưu thay đổi' : '+ Đăng tin ngay'}</button>
                                 </div>
                             </form>
                         </div>
