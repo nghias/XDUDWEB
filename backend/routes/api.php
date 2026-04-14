@@ -34,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     Route::put('/cap-nhat-thong-tin', [NguoiDungController::class, 'capNhatThongTinCaNhan']);
+
+    Route::get('/admin/users', [NguoiDungController::class, 'tatCaNguoiDung']);
+    Route::get('/admin/tin-dang', [TinDangController::class, 'tatCaTinDang']);
 });
 
 /*
