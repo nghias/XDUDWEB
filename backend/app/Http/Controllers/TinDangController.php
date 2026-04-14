@@ -46,35 +46,37 @@ class TinDangController extends Controller
     {
         DB::beginTransaction();
         try {
-            // 1. Tạo tin đăng (Tắt timestamps trong Model TinDang)
+            // 1. Tạo tin đăng
             $tin = TinDang::create([
-                'ma_chu_nha' => $request->ma_chu_nha,
-                'tieu_de' => $request->tieu_de,
-                'mo_ta' => $request->mo_ta,
-                'gia_thue' => $request->gia_thue,
-                'dien_tich' => $request->dien_tich,
-                'ma_loai_phong' => $request->ma_loai_phong,
-                'trang_thai' => 'hoat_dong',
-                'luot_xem' => 0,
-                'ngay_dang' => now()
+                'ma_chu_nha'    => $request->ma_chu_nha ?? 1, // Mặc định là 1 nếu null để tránh lỗi
+                'tieu_de'       => $request->tieu_de,
+                'mo_ta'         => $request->mo_ta,
+                'gia_thue'      => (float)$request->gia_thue,
+                'dien_tich'     => (float)$request->dien_tich,
+                'ma_loai_phong' => (int)$request->ma_loai_phong,
+                'trang_thai'    => 'hoat_dong',
+                'luot_xem'      => 0,
+                'ngay_dang'     => now()
             ]);
 
-            // 2. Tạo vị trí liên kết
+            // 2. Tạo vị trí liên kết (Bổ sung tọa độ mặc định để tránh lỗi database)
             DB::table('vi_tri')->insert([
-                'ma_tin_dang' => $tin->id,
-                'tinh_thanh_pho' => $request->tinh_thanh_pho,
-                'quan_huyen' => $request->quan_huyen,
-                'phuong_xa' => $request->phuong_xa,
-                'ten_duong' => $request->ten_duong,
-                'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet
+                'ma_tin_dang'      => $tin->id,
+                'tinh_thanh_pho'   => $request->tinh_thanh_pho,
+                'quan_huyen'       => $request->quan_huyen,
+                'phuong_xa'        => $request->phuong_xa,
+                'ten_duong'        => $request->ten_duong,
+                'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet,
+                'vi_do'            => 0, 
+                'kinh_do'          => 0
             ]);
 
             // 3. Lưu tiện ích
-            if ($request->has('tien_ich')) {
+            if ($request->has('tien_ich') && is_array($request->tien_ich)) {
                 foreach ($request->tien_ich as $maTienIch) {
                     DB::table('tien_ich_tin_dang')->insert([
                         'ma_tin_dang' => $tin->id,
-                        'ma_tien_ich' => $maTienIch
+                        'ma_tien_ich' => (int)$maTienIch
                     ]);
                 }
             }
@@ -82,13 +84,16 @@ class TinDangController extends Controller
             // 4. Upload ảnh lên Cloudinary
             if ($request->hasFile('hinh_anh')) {
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    $result = Cloudinary::upload($file->getRealPath(), ['folder' => 'timtro_duan']);
+                    // Sử dụng phương thức upload trực tiếp từ File Object
+                    $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
+                        'folder' => 'timtro_duan'
+                    ]);
                     $url = $result->getSecurePath();
 
                     DB::table('hinh_anh_tin')->insert([
-                        'ma_tin_dang' => $tin->id,
+                        'ma_tin_dang'   => $tin->id,
                         'duong_dan_anh' => $url,
-                        'la_anh_bia' => $index === 0 ? 1 : 0 
+                        'la_anh_bia'    => $index === 0 ? 1 : 0 
                     ]);
                 }
             }
@@ -97,7 +102,7 @@ class TinDangController extends Controller
             return response()->json(['message' => 'Đăng tin thành công!', 'data' => $tin], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
         }
     }
 
@@ -109,32 +114,49 @@ class TinDangController extends Controller
 
         DB::beginTransaction();
         try {
-            $tin->update($request->only(['tieu_de', 'mo_ta', 'gia_thue', 'dien_tich', 'ma_loai_phong', 'trang_thai']));
+            // Cập nhật thông tin cơ bản
+            $tin->update([
+                'tieu_de'       => $request->tieu_de,
+                'mo_ta'         => $request->mo_ta,
+                'gia_thue'      => (float)$request->gia_thue,
+                'dien_tich'     => (float)$request->dien_tich,
+                'ma_loai_phong' => (int)$request->ma_loai_phong,
+                'trang_thai'    => $request->trang_thai
+            ]);
 
+            // Cập nhật vị trí
             DB::table('vi_tri')->where('ma_tin_dang', $id)->update([
-                'tinh_thanh_pho' => $request->tinh_thanh_pho,
-                'quan_huyen' => $request->quan_huyen,
-                'phuong_xa' => $request->phuong_xa,
-                'ten_duong' => $request->ten_duong,
+                'tinh_thanh_pho'   => $request->tinh_thanh_pho,
+                'quan_huyen'       => $request->quan_huyen,
+                'phuong_xa'        => $request->phuong_xa,
+                'ten_duong'        => $request->ten_duong,
                 'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet
             ]);
 
+            // Cập nhật tiện ích (Xóa cũ thêm mới)
             DB::table('tien_ich_tin_dang')->where('ma_tin_dang', $id)->delete();
-            if ($request->has('tien_ich')) {
+            if ($request->has('tien_ich') && is_array($request->tien_ich)) {
                 foreach ($request->tien_ich as $maTienIch) {
-                    DB::table('tien_ich_tin_dang')->insert(['ma_tin_dang' => $id, 'ma_tien_ich' => $maTienIch]);
+                    DB::table('tien_ich_tin_dang')->insert([
+                        'ma_tin_dang' => $id, 
+                        'ma_tien_ich' => (int)$maTienIch
+                    ]);
                 }
             }
 
+            // Cập nhật hình ảnh (Nếu có upload mới thì thay thế toàn bộ)
             if ($request->hasFile('hinh_anh')) {
                 DB::table('hinh_anh_tin')->where('ma_tin_dang', $id)->delete();
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    $result = Cloudinary::upload($file->getRealPath(), ['folder' => 'timtro_duan']);
+                    $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
+                        'folder' => 'timtro_duan'
+                    ]);
                     $url = $result->getSecurePath();
+                    
                     DB::table('hinh_anh_tin')->insert([
-                        'ma_tin_dang' => $id,
+                        'ma_tin_dang'   => $id,
                         'duong_dan_anh' => $url,
-                        'la_anh_bia' => $index === 0 ? 1 : 0 
+                        'la_anh_bia'    => $index === 0 ? 1 : 0 
                     ]);
                 }
             }
@@ -143,7 +165,7 @@ class TinDangController extends Controller
             return response()->json(["message" => "Cập nhật thành công!"]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Lỗi: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Lỗi cập nhật: ' . $e->getMessage()], 500);
         }
     }
 
