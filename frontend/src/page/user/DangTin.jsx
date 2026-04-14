@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2, Send, ImagePlus, X, MapPin, Home } from "lucide-react";
+import { Loader2, Send, ImagePlus, X, MapPin, Home, ArrowLeft } from "lucide-react"; // Thêm ArrowLeft ở đây
 
 const DangTin = () => {
   const navigate = useNavigate();
@@ -131,6 +131,17 @@ const DangTin = () => {
     <div className="container py-5 bg-light min-vh-100">
       <div className="row justify-content-center">
         <div className="col-lg-9">
+          
+          {/* THÊM NÚT QUAY LẠI TẠI ĐÂY */}
+          <button 
+            type="button" 
+            onClick={() => navigate(-1)} 
+            className="btn btn-link text-decoration-none text-secondary d-flex align-items-center gap-2 mb-3 px-0 fw-medium"
+            style={{ width: 'fit-content' }}
+          >
+            <ArrowLeft size={20} /> Quay lại
+          </button>
+
           <div className="card shadow border-0 rounded-4 overflow-hidden">
             <div className="bg-primary p-4 text-white d-flex align-items-center gap-3">
               <div className="p-3 bg-white bg-opacity-25 rounded-circle"><Home size={32}/></div>
