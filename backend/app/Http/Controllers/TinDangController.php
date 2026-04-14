@@ -47,7 +47,7 @@ class TinDangController extends Controller
         try {
             // 1. Tạo tin đăng
             $tin = TinDang::create([
-                'ma_chu_nha'    => $request->ma_chu_nha ?? 1, // Mặc định là 1 nếu null để tránh lỗi
+                'ma_chu_nha'    => $request->ma_chu_nha ?? 1,
                 'tieu_de'       => $request->tieu_de,
                 'mo_ta'         => $request->mo_ta,
                 'gia_thue'      => (float)$request->gia_thue,
@@ -58,7 +58,7 @@ class TinDangController extends Controller
                 'ngay_dang'     => now()
             ]);
 
-            // 2. Tạo vị trí liên kết (Bổ sung tọa độ mặc định để tránh lỗi database)
+            // 2. Tạo vị trí liên kết
             DB::table('vi_tri')->insert([
                 'ma_tin_dang'      => $tin->id,
                 'tinh_thanh_pho'   => $request->tinh_thanh_pho,
@@ -80,14 +80,24 @@ class TinDangController extends Controller
                 }
             }
 
-            // 4. Upload ảnh lên Cloudinary
+            // 4. Upload ảnh lên Cloudinary (DÙNG SDK TRỰC TIẾP ĐỂ KHÔNG BỊ LỖI CONFIG)
             if ($request->hasFile('hinh_anh')) {
+                // Khởi tạo trực tiếp bằng biến môi trường (Bỏ qua file config)
+                $cloudinary = new \Cloudinary\Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                        'api_key'    => env('CLOUDINARY_API_KEY'),
+                        'api_secret' => env('CLOUDINARY_API_SECRET'),
+                    ],
+                ]);
+
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    // Sử dụng phương thức upload trực tiếp từ File Object
-                    $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
+                    // Upload file thẳng lên Cloudinary
+                    $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                         'folder' => 'timtro_duan'
                     ]);
-                    $url = $result->getSecurePath();
+                    
+                    $url = $uploadResult['secure_url'];
 
                     DB::table('hinh_anh_tin')->insert([
                         'ma_tin_dang'   => $tin->id,
@@ -143,14 +153,25 @@ class TinDangController extends Controller
                 }
             }
 
-            // Cập nhật hình ảnh (Nếu có upload mới thì thay thế toàn bộ)
+            // Cập nhật hình ảnh (DÙNG SDK TRỰC TIẾP)
             if ($request->hasFile('hinh_anh')) {
                 DB::table('hinh_anh_tin')->where('ma_tin_dang', $id)->delete();
+                
+                // Khởi tạo trực tiếp bằng biến môi trường
+                $cloudinary = new \Cloudinary\Cloudinary([
+                    'cloud' => [
+                        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                        'api_key'    => env('CLOUDINARY_API_KEY'),
+                        'api_secret' => env('CLOUDINARY_API_SECRET'),
+                    ],
+                ]);
+
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    $result = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($file->getRealPath(), [
+                    $uploadResult = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                         'folder' => 'timtro_duan'
                     ]);
-                    $url = $result->getSecurePath();
+                    
+                    $url = $uploadResult['secure_url'];
                     
                     DB::table('hinh_anh_tin')->insert([
                         'ma_tin_dang'   => $id,
@@ -167,7 +188,6 @@ class TinDangController extends Controller
             return response()->json(['message' => 'Lỗi cập nhật: ' . $e->getMessage()], 500);
         }
     }
-
     // DELETE /api/xoa-tin-dang/{id}
     public function xoaTinDang($id)
     {
