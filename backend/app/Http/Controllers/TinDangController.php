@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TinDang;
 use App\Models\HinhAnhTin;
 use Illuminate\Http\Request;
-use App\Http\Requests\TaoTinDangRequest;
+use Illuminate\Support\Facades\DB;
 
 class TinDangController extends Controller
 {
@@ -36,20 +36,63 @@ class TinDangController extends Controller
     }
 
     // POST /api/tao-tin-dang
-    public function taoTinDang(TaoTinDangRequest $request)
+    public function taoTinDang(Request $request)
     {
-        $data = $request->validated();
+        DB::beginTransaction();
+        try {
+            // 1. Tạo tin đăng
+            $tin = TinDang::create([
+                'tieu_de' => $request->tieu_de,
+                'mo_ta' => $request->mo_ta,
+                'gia_thue' => $request->gia_thue,
+                'dien_tich' => $request->dien_tich,
+                'ma_chu_nha' => $request->ma_chu_nha,
+                'ma_loai_phong' => $request->ma_loai_phong,
+                'trang_thai' => 'hoat_dong',
+                'luot_xem' => 0,
+                'ngay_dang' => now()
+            ]);
 
-        $data['trang_thai'] = 'hoat_dong';
-        $data['luot_xem'] = 0;
-        $data['ngay_dang'] = now();
+            // 2. Tạo vị trí liên kết với tin đăng vừa tạo
+            DB::table('vi_tri')->insert([
+                'ma_tin_dang' => $tin->id,
+                'tinh_thanh_pho' => $request->tinh_thanh_pho,
+                'quan_huyen' => $request->quan_huyen,
+                'phuong_xa' => $request->phuong_xa,
+                'ten_duong' => $request->ten_duong,
+                'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet
+            ]);
 
-        $tin = TinDang::create($data);
+            // 3. Thêm tiện ích (Nếu có chọn)
+            if ($request->has('tien_ich')) {
+                foreach ($request->tien_ich as $maTienIch) {
+                    DB::table('tien_ich_tin_dang')->insert([
+                        'ma_tin_dang' => $tin->id,
+                        'ma_tien_ich' => $maTienIch
+                    ]);
+                }
+            }
 
-        return response()->json([
-            'message'=>'Tạo tin đăng thành công',
-            'data'=>$tin
-        ],201);
+            // 4. Upload & Lưu hình ảnh
+            if ($request->hasFile('hinh_anh')) {
+                foreach ($request->file('hinh_anh') as $index => $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('uploads/images'), $filename); // Lưu vào folder public/uploads/images
+                    
+                    DB::table('hinh_anh_tin_dang')->insert([
+                        'ma_tin_dang' => $tin->id,
+                        'duong_dan_anh' => '/uploads/images/' . $filename,
+                        'la_anh_bia' => $index === 0 ? 1 : 0 // Ảnh đầu tiên làm ảnh bìa
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Tạo tin đăng thành công', 'data' => $tin], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
+        }
     }
 
     // GET /api/tin-dang-cua-toi/{ma_chu_nha}
@@ -68,19 +111,60 @@ class TinDangController extends Controller
     public function capNhatTinDang(Request $request, $id)
     {
         $tin = TinDang::find($id);
+        if (!$tin) return response()->json(["message" => "Tin đăng không tồn tại"], 404);
 
-        if(!$tin){
-            return response()->json([
-                "message"=>"Tin đăng không tồn tại"
-            ],404);
+        DB::beginTransaction();
+        try {
+            // Cập nhật thông tin cơ bản
+            $tin->update([
+                'tieu_de' => $request->tieu_de,
+                'mo_ta' => $request->mo_ta,
+                'gia_thue' => $request->gia_thue,
+                'dien_tich' => $request->dien_tich,
+                'ma_loai_phong' => $request->ma_loai_phong,
+                'trang_thai' => $request->trang_thai
+            ]);
+
+            // Cập nhật vị trí
+            DB::table('vi_tri')->where('ma_tin_dang', $tin->id)->update([
+                'tinh_thanh_pho' => $request->tinh_thanh_pho,
+                'quan_huyen' => $request->quan_huyen,
+                'phuong_xa' => $request->phuong_xa,
+                'ten_duong' => $request->ten_duong,
+                'dia_chi_chi_tiet' => $request->dia_chi_chi_tiet
+            ]);
+
+            // Cập nhật tiện ích (Xóa cũ, Thêm mới)
+            if ($request->has('tien_ich')) {
+                DB::table('tien_ich_tin_dang')->where('ma_tin_dang', $tin->id)->delete();
+                foreach ($request->tien_ich as $maTienIch) {
+                    DB::table('tien_ich_tin_dang')->insert([
+                        'ma_tin_dang' => $tin->id,
+                        'ma_tien_ich' => $maTienIch
+                    ]);
+                }
+            }
+
+            // Xử lý ảnh: NẾU người dùng upload ảnh mới thì xóa ảnh cũ trong DB và thêm mới
+            if ($request->hasFile('hinh_anh')) {
+                DB::table('hinh_anh_tin_dang')->where('ma_tin_dang', $tin->id)->delete();
+                foreach ($request->file('hinh_anh') as $index => $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('uploads/images'), $filename);
+                    DB::table('hinh_anh_tin_dang')->insert([
+                        'ma_tin_dang' => $tin->id,
+                        'duong_dan_anh' => '/uploads/images/' . $filename,
+                        'la_anh_bia' => $index === 0 ? 1 : 0 
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(["message" => "Cập nhật tin đăng thành công", "data" => $tin]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Lỗi hệ thống: ' . $e->getMessage()], 500);
         }
-
-        $tin->update($request->all());
-
-        return response()->json([
-            "message"=>"Cập nhật tin đăng thành công",
-            "data"=>$tin
-        ]);
     }
 
     // DELETE /api/xoa-tin-dang/{id}
