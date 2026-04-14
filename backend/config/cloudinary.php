@@ -1,10 +1,6 @@
 <?php
 
 return [
-
-    'cloud_url' => env('CLOUDINARY_URL'),
-
-    // Đây là mảng mà hệ thống đang báo thiếu (Undefined array key "cloud")
     'cloud' => [
         'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
         'api_key'    => env('CLOUDINARY_API_KEY'),
