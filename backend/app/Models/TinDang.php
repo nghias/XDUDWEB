@@ -5,7 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class TinDang extends Model {
     protected $table = 'tin_dang';
-    protected $guarded = []; // Cho phép mass assignment
+    protected $guarded = [];
+
+    public $timestamps = false;
 
     public function viTri() {
         return $this->hasOne(ViTri::class, 'ma_tin_dang', 'id');
@@ -16,7 +18,7 @@ class TinDang extends Model {
     public function hinhAnh() {
         return $this->hasMany(HinhAnhTin::class, 'ma_tin_dang', 'id');
     }
-    // Quan hệ nhiều-nhiều với bảng Tiện Ích
+    
     public function tienIch() {
         return $this->belongsToMany(TienIch::class, 'tien_ich_tin_dang', 'ma_tin_dang', 'ma_tien_ich');
     }
