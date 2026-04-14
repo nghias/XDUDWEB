@@ -22,4 +22,8 @@ class TinDang extends Model {
     public function tienIch() {
         return $this->belongsToMany(TienIch::class, 'tien_ich_tin_dang', 'ma_tin_dang', 'ma_tien_ich');
     }
+
+    public function nguoiDung() {
+        return $this->belongsTo(NguoiDung::class, 'ma_chu_nha', 'id');
+    }
 }
