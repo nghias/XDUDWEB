@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 
 class NguoiDung extends Model
 {
     protected $table = 'nguoi_dung';
+
+    use HasApiTokens;
 
     public $timestamps = false;
 
