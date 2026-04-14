@@ -170,7 +170,7 @@ const Header = () => {
               
               {/* XEM TIN ĐĂNG: Mọi quyền đều xem được */}
               <li className="nav-item">
-                <Link className="nav-link fw-semibold text-dark" to="/">
+                <Link className="nav-link fw-semibold text-primary" to="/">
                   <i className="bi bi-house-door me-1"></i> Tìm trọ
                 </Link>
               </li>
