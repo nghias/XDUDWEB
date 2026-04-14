@@ -7,10 +7,11 @@ const PostManagement = () => {
   const [loadingId, setLoadingId] = useState(null);
 
   // === CẤU HÌNH API & TOKEN ===
-  const API_URL = "https://xdudweb-php.onrender.com/api/admin/tin-dang";
+  const API_URL = "https://xdudweb-php.onrender.com/api";
 
   const getAxiosConfig = () => {
-    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    // Sửa thành auth_token cho khớp với lúc đăng nhập
+    const token = localStorage.getItem("auth_token"); 
     return {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -19,11 +20,11 @@ const PostManagement = () => {
     };
   };
 
-  // ================== FETCH POSTS ==================
+  // ================== LẤY DANH SÁCH ==================
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(API_URL, getAxiosConfig());
+      const res = await axios.get(`${API_URL}/admin/tin-dang`, getAxiosConfig());
       const data = res.data?.data || res.data || [];
       setPosts(data);
     } catch (err) {
@@ -35,23 +36,18 @@ const PostManagement = () => {
     }
   };
 
-// ================== DUYỆT / ĐỔI TRẠNG THÁI TIN ==================
+  // ================== DUYỆT / ĐỔI TRẠNG THÁI TIN ==================
   const handleDuyetTin = async (post) => {
     const postId = post.id || post.ma_tin_dang || post.post_id;
     setLoadingId(postId);
 
     try {
       const currentStatus = post.trang_thai || post.status;
-      
-      // SỬA Ở ĐÂY: Dùng đúng các giá trị ENUM của bảng tin_dang
-      // Nếu đang 'hoat_dong' thì chuyển về 'cho_duyet' (hoặc 'an'), ngược lại thì thành 'hoat_dong'
       const targetStatus = currentStatus === 'hoat_dong' ? 'cho_duyet' : 'hoat_dong';
 
-      const payload = {
-        trang_thai: targetStatus 
-      };
+      const payload = { trang_thai: targetStatus };
 
-      const res = await axios.post(`${API_URL}/${postId}/duyet`, payload, getAxiosConfig());
+      const res = await axios.post(`${API_URL}/admin/tin-dang/${postId}/duyet`, payload, getAxiosConfig());
       
       const newStatus = res.data?.new_status || targetStatus;
 
@@ -64,13 +60,7 @@ const PostManagement = () => {
       alert(res.data?.message || "Đã cập nhật trạng thái tin đăng thành công!");
     } catch (err) {
       console.error("Lỗi chi tiết:", err.response?.data);
-      const validationErrors = err.response?.data?.errors;
-      if (validationErrors) {
-        const errorMessages = Object.values(validationErrors).flat().join("\n");
-        alert("Dữ liệu gửi lên không hợp lệ:\n" + errorMessages);
-      } else {
-        alert("Cập nhật thất bại: " + (err.response?.data?.message || err.message));
-      }
+      alert("Cập nhật thất bại: " + (err.response?.data?.message || err.message));
     } finally {
       setLoadingId(null);
     }
@@ -81,9 +71,10 @@ const PostManagement = () => {
     const postId = post.id || post.ma_tin_dang || post.post_id;
     
     if (window.confirm(`XÓA bài đăng có ID #${postId}? Thao tác này không thể khôi phục!`)) {
-      setLoadingId(postId);
+      setLoadingId(`delete-${postId}`);
       try {
-        await axios.delete(`${API_URL}/${postId}`, getAxiosConfig());
+        // SỬA URL THÀNH API XÓA CHUẨN CỦA BẠN
+        await axios.delete(`${API_URL}/xoa-tin-dang/${postId}`, getAxiosConfig());
         setPosts((prevPosts) => prevPosts.filter((p) => (p.id || p.ma_tin_dang || p.post_id) !== postId));
         alert("Xóa thành công!");
       } catch (err) {
@@ -167,18 +158,13 @@ const PostManagement = () => {
             {!loading && posts.length > 0 && (
               <tbody>
                 {posts.map((post) => {
-                  // ĐỒNG BỘ VỚI DB LARAVEL DỰA TRÊN MODEL
                   const postId = post.id || post.ma_tin_dang || post.post_id;
                   const title = post.tieu_de || post.title;
                   const price = post.gia_thue || post.gia || post.price;
                   const status = post.trang_thai || post.status;
-                  
-                  // Lấy đúng cột ngay_dang
                   const date = post.ngay_dang || post.ngay_tao || post.created_at; 
                   
-                  // Xử lý thông tin người đăng (thử lấy theo relation, nếu không có lấy ma_chu_nha)
                   const authorId = post.ma_chu_nha || post.nguoi_dung_id || "N/A";
-                  // Nếu Backend có trả về relation nguoiDung (eager loading) -> lấy ho_ten
                   const authorName = post.nguoi_dung?.ho_ten || post.nguoiDung?.ho_ten;
                   const displayAuthor = authorName ? authorName : `ID: ${authorId}`;
 
@@ -218,7 +204,7 @@ const PostManagement = () => {
                           <button
                             className="btn btn-sm btn-outline-danger btn-icon"
                             onClick={() => deletePost(post)}
-                            disabled={loadingId === postId}
+                            disabled={loadingId === `delete-${postId}`}
                             title="Xóa bài viết"
                           >
                             {loadingId === `delete-${postId}` ? (
