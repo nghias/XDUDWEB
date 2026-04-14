@@ -95,8 +95,38 @@ class AuthController extends Controller
         // Gửi email (Laravel sẽ tự lấy cấu hình Brevo ở file .env để gửi đi)
         Mail::send([], [], function ($message) use ($user, $token) {
             $message->to($user->email)
-                ->subject('Mã xác nhận đổi mật khẩu')
-                ->html("<h3>Chào {$user->ho_ten},</h3><p>Mã xác nhận đổi mật khẩu của bạn là: <b>{$token}</b></p>");
+                ->subject('Mã xác nhận đổi mật khẩu - Tìm Trọ Trực Tuyến')
+                ->html("
+                    <div style='font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 40px 0; margin: 0;'>
+                        <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; padding: 40px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center;'>
+                            
+                            <h2 style='color: #0d6efd; margin-bottom: 20px;'>Yêu Cầu Đặt Lại Mật Khẩu</h2>
+                            
+                            <p style='font-size: 16px; color: #333333; text-align: left;'>Chào <b>{$user->ho_ten}</b>,</p>
+                            
+                            <p style='font-size: 16px; color: #555555; text-align: left; line-height: 1.6;'>
+                                Bạn vừa yêu cầu mã xác nhận để đặt lại mật khẩu cho tài khoản tại hệ thống <b>Tìm Trọ Trực Tuyến</b>. Dưới đây là mã xác nhận của bạn:
+                            </p>
+                            
+                            <div style='margin: 30px 0;'>
+                                <span style='display: inline-block; font-size: 36px; font-weight: bold; color: #0d6efd; letter-spacing: 8px; background-color: #e9ecef; padding: 15px 30px; border-radius: 8px; border: 2px dashed #0d6efd;'>
+                                    {$token}
+                                </span>
+                            </div>
+                            
+                            <p style='font-size: 14px; color: #777777; text-align: left;'>
+                                <i>Lưu ý: Vui lòng không chia sẻ mã này cho bất kỳ ai. Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email này.</i>
+                            </p>
+                            
+                            <hr style='border: none; border-top: 1px solid #eeeeee; margin: 30px 0;' />
+                            
+                            <p style='font-size: 12px; color: #999999;'>
+                                Đây là email tự động, vui lòng không trả lời. <br>
+                                &copy; 2026 Tìm Trọ Trực Tuyến.
+                            </p>
+                        </div>
+                    </div>
+                ");
         });
 
         return response()->json(['message' => 'Mã xác nhận đã được gửi vào Email của bạn!']);
