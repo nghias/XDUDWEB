@@ -30,21 +30,21 @@ const Footer = () => {
 
                     {/* Cột 2: Liên kết nhanh */}
                     <div className="col-lg-4 col-md-6 ps-lg-5">
-                        <h5 className="fw-bold mb-3 text-white">Liên kết nhanh</h5>
+                        <h5 className="fw-bold mb-3 text-white">Pháp lý và điều khoản</h5>
                         <ul className="list-unstyled d-flex flex-column gap-2 small">
                             <li>
-                                <Link to="/" className="text-white-50 text-decoration-none hover-white">
-                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Trang chủ
+                                <Link to="#" className="text-white-50 text-decoration-none hover-white">
+                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Pháp lý
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/search" className="text-white-50 text-decoration-none hover-white">
-                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Tìm kiếm phòng trọ
+                                <Link to="#" className="text-white-50 text-decoration-none hover-white">
+                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Dịch vụ
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/quan-ly-tin-dang" className="text-white-50 text-decoration-none hover-white">
-                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Quản lý tin đăng
+                                <Link to="#" className="text-white-50 text-decoration-none hover-white">
+                                    <i className="bi bi-chevron-right me-1" style={{ fontSize: '10px' }}></i> Điều khoản sử dụng
                                 </Link>
                             </li>
                             <li>
