@@ -37,6 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/admin/users', [NguoiDungController::class, 'tatCaNguoiDung']);
     Route::get('/admin/tin-dang', [TinDangController::class, 'tatCaTinDang']);
+    Route::post('/admin/tin-dang/{id}/duyet', [TinDangController::class, 'duyetTin']);
+
+    Route::get('/admin/users', [\App\Http\Controllers\NguoiDungController::class, 'tatCaNguoiDung']);
+    Route::post('/admin/users/{id}/toggle-status', [\App\Http\Controllers\NguoiDungController::class, 'toggleStatus']);
 });
 
 /*

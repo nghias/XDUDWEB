@@ -41,6 +41,23 @@ class TinDangController extends Controller
         return response()->json(['data' => $danhSach]);
     }
 
+    public function duyetTin(Request $request, $id)
+    {
+        $tin = TinDang::find($id);
+        if (!$tin) {
+            return response()->json(["message" => "Không tìm thấy tin đăng"], 404);
+        }
+
+        // Cập nhật trạng thái mới
+        $tin->trang_thai = $request->trang_thai;
+        $tin->save();
+
+        return response()->json([
+            "message" => "Cập nhật trạng thái thành công!",
+            "new_status" => $tin->trang_thai
+        ]);
+    }
+
     // POST /api/tao-tin-dang
     public function taoTinDang(Request $request)
     {

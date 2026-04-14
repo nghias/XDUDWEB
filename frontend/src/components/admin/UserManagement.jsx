@@ -13,12 +13,12 @@ const UserManagement = () => {
   };
 
   // === CẤU HÌNH API & TOKEN ===
-  const API_URL = "https://xdudweb-php.onrender.com/api/admin/users"; 
+  // Đặt BASE_API chuẩn để dễ nối chuỗi
+  const BASE_API = "https://xdudweb-php.onrender.com/api"; 
+  const API_URL = `${BASE_API}/admin/users`; 
 
-  // Hàm đính kèm Token bảo mật cho mỗi request
   const getAxiosConfig = () => {
-    // Sửa thành auth_token cho khớp với lúc đăng nhập
-    const token = localStorage.getItem("auth_token"); 
+    const token = localStorage.getItem('auth_token');
     return {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -53,7 +53,6 @@ const UserManagement = () => {
     try {
       const res = await axios.post(`${API_URL}/${user.id}/toggle-status`, {}, getAxiosConfig());
       
-      // Lấy trạng thái mới từ API, nếu không có thì tự đảo ngược local
       const newStatus = res.data.new_status || (user.trang_thai === 'hoat_dong' ? 'khoa' : 'hoat_dong');
 
       setUsers((prevUsers) =>
@@ -88,7 +87,8 @@ const UserManagement = () => {
 
     setLoadingId(`delete-${user.id}`);
     try {
-      await axios.delete(`${API_URL}/${user.id}`, getAxiosConfig());
+      // ĐÃ SỬA URL THÀNH ĐÚNG API CỦA LARAVEL: /xoa-nguoi-dung/{id}
+      await axios.delete(`${BASE_API}/xoa-nguoi-dung/${user.id}`, getAxiosConfig());
       setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
       toast(`Đã xóa tài khoản ${user.ho_ten}`);
     } catch (err) {
@@ -212,7 +212,7 @@ const UserManagement = () => {
                           {isBlocked ? "Bị khóa" : "Hoạt động"}
                         </span>
                       </td>
-                      <td>{formatDate(user.ngay_tao)}</td>
+                      <td>{formatDate(user.ngay_tao || user.created_at)}</td>
                       <td className="text-center">
                         <div className="btn-group">
                           {/* Nút Khóa/Mở Khóa */}

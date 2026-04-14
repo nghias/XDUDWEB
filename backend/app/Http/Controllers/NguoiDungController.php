@@ -17,6 +17,29 @@ class NguoiDungController extends Controller
         return response()->json($nguoiDung);
     }
 
+    public function toggleStatus($id)
+    {
+        // Ghi chú: Đổi tên Model NguoiDung thành User nếu dự án của bạn dùng tên User
+        $user = NguoiDung::find($id); 
+        
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
+        }
+
+        if ($user->vai_tro === 'admin') {
+            return response()->json(['message' => 'Không thể khóa tài khoản Admin'], 403);
+        }
+
+        // Đảo ngược trạng thái
+        $user->trang_thai = ($user->trang_thai === 'hoat_dong') ? 'khoa' : 'hoat_dong';
+        $user->save();
+
+        return response()->json([
+            'message' => 'Cập nhật trạng thái thành công!',
+            'new_status' => $user->trang_thai
+        ]);
+    }
+
 
     // GET /api/chi-tiet-nguoi-dung/{id}
     public function chiTietNguoiDung($id)
