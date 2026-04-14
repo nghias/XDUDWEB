@@ -128,26 +128,6 @@ Route::delete('/xoa-anh-tin/{id}',
 
 /*
 |--------------------------------------------------------------------------
-| ĐẶT PHÒNG
-|--------------------------------------------------------------------------
-*/
-
-Route::post('/dat-phong',[DatPhongController::class,'datPhong']);
-
-Route::get('/danh-sach-dat-phong',
-[DatPhongController::class,'danhSachDatPhong']);
-
-Route::get('/dat-phong-cua-toi/{ma_nguoi_dat}',
-[DatPhongController::class,'datPhongCuaToi']);
-
-Route::put('/xac-nhan-dat-phong/{id}',
-[DatPhongController::class,'xacNhan']);
-
-Route::delete('/huy-dat-phong/{id}',
-[DatPhongController::class,'huyDatPhong']);
-
-/*
-|--------------------------------------------------------------------------
 | DichVu
 |--------------------------------------------------------------------------
 */
