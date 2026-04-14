@@ -88,11 +88,12 @@ const QuanLyTinDang = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h3 className="fw-bold text-primary">Quản lý tin đăng</h3>
                 <button 
-                    className="btn btn-warning text-dark fw-bold shadow-sm px-4 py-2" 
+                    className="btn btn-primary text-dark fw-bold shadow-sm px-4 py-2" 
                     style={{ borderRadius: '8px' }}
                     onClick={handleAddNew}
                 >
-                    <i className="bi bi-plus-circle me-2"></i> + Đăng tin
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Đăng tin
                 </button>
             </div>
 
