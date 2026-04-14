@@ -8,6 +8,7 @@ use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\HinhAnhTinController;
+use App\Http\Controllers\DatPhongController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,3 +127,23 @@ Route::put('/cap-nhat-anh-tin/{id}',
 
 Route::delete('/xoa-anh-tin/{id}',
 [HinhAnhTinController::class,'xoaAnh']);
+
+/*
+|--------------------------------------------------------------------------
+| ĐẶT PHÒNG
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/dat-phong',[DatPhongController::class,'datPhong']);
+
+Route::get('/danh-sach-dat-phong',
+[DatPhongController::class,'danhSachDatPhong']);
+
+Route::get('/dat-phong-cua-toi/{ma_nguoi_dat}',
+[DatPhongController::class,'datPhongCuaToi']);
+
+Route::put('/xac-nhan-dat-phong/{id}',
+[DatPhongController::class,'xacNhan']);
+
+Route::delete('/huy-dat-phong/{id}',
+[DatPhongController::class,'huyDatPhong']);
