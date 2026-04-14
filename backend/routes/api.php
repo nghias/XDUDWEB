@@ -9,6 +9,7 @@ use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\HinhAnhTinController;
 use App\Http\Controllers\DatPhongController;
+use App\Http\Controllers\Admin\GoiDichVuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +66,6 @@ Route::get('/tim-kiem-tin-dang',
 [TinDangController::class, 'timKiemNangCao']
 );
 
-
 /*
 |--------------------------------------------------------------------------
 | TIN NHẮN
@@ -87,13 +87,11 @@ Route::delete('/xoa-tin-nhan/{id}',
 Route::get('/cuoc-tro-chuyen/{ma_cuoc_tro_chuyen}',
 [TinNhanController::class, 'cuocTroChuyen']);
 
-
 /*
 |--------------------------------------------------------------------------
 | NGƯỜI DÙNG
 |--------------------------------------------------------------------------
 */
-
 
 Route::get('/tat-ca-nguoi-dung',
 [NguoiDungController::class,'tatCaNguoiDung']);
@@ -147,3 +145,16 @@ Route::put('/xac-nhan-dat-phong/{id}',
 
 Route::delete('/huy-dat-phong/{id}',
 [DatPhongController::class,'huyDatPhong']);
+
+/*
+|--------------------------------------------------------------------------
+| DichVu
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin/goidichvu')->group(function () {
+    Route::get('/', [GoiDichVuController::class, 'index']);      
+    Route::post('/', [GoiDichVuController::class, 'store']);     
+    Route::put('/{id}', [GoiDichVuController::class, 'update']); 
+}); 
+
