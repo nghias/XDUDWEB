@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\TinDang;
-use App\Models\HinhAnhTin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,13 +32,13 @@ class TinDangController extends Controller
     // GET /api/tin-dang-cua-toi/{ma_chu_nha}
     public function tinDangCuaToi($ma_chu_nha)
     {
-        $tinDang = TinDang::where('ma_chu_nha',$ma_chu_nha)
-            ->orderBy('id','desc')
+        // Thêm with() để Laravel tự động nối bảng Vị trí, Hình ảnh và Tiện ích
+        $danhSach = TinDang::with(['viTri', 'hinhAnh', 'tienIch', 'loaiPhong'])
+            ->where('ma_chu_nha', $ma_chu_nha)
+            ->orderBy('ngay_dang', 'desc')
             ->get();
 
-        return response()->json([
-            "data"=>$tinDang
-        ]);
+        return response()->json(['data' => $danhSach]);
     }
 
     // POST /api/tao-tin-dang
@@ -195,21 +194,41 @@ class TinDangController extends Controller
     {
         $tin = TinDang::find($id);
 
-        if(!$tin){
+        if (!$tin) {
             return response()->json([
-                "message"=>"Tin đăng không tồn tại"
-            ],404);
+                "message" => "Tin đăng không tồn tại"
+            ], 404);
         }
 
-        // xóa ảnh liên quan
-        HinhAnhTin::where('ma_tin_dang',$id)->delete();
+        // Bắt đầu Transaction để bảo vệ dữ liệu
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            // 1. Xóa tất cả tiện ích liên quan đến tin đăng
+            \Illuminate\Support\Facades\DB::table('tien_ich_tin_dang')->where('ma_tin_dang', $id)->delete();
 
-        // xóa tin
-        $tin->delete();
+            // 2. Xóa vị trí của tin đăng
+            \Illuminate\Support\Facades\DB::table('vi_tri')->where('ma_tin_dang', $id)->delete();
 
-        return response()->json([
-            "message"=>"Xóa tin đăng thành công"
-        ]);
+            // 3. Xóa các record hình ảnh trong Database
+            \Illuminate\Support\Facades\DB::table('hinh_anh_tin')->where('ma_tin_dang', $id)->delete();
+
+            // 4. Cuối cùng, xóa tin đăng chính
+            $tin->delete();
+
+            // Xác nhận lưu các thay đổi xóa
+            \Illuminate\Support\Facades\DB::commit();
+
+            return response()->json([
+                "message" => "Xóa tin đăng và dọn dẹp dữ liệu thành công!"
+            ]);
+
+        } catch (\Exception $e) {
+            // Nếu có lỗi ở bất kỳ bước nào, hoàn tác lại toàn bộ
+            \Illuminate\Support\Facades\DB::rollBack();
+            return response()->json([
+                "message" => "Lỗi hệ thống khi xóa tin: " . $e->getMessage()
+            ], 500);
+        }
     }
 
     // GET /api/tim-kiem-tin-dang
