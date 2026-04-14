@@ -94,7 +94,7 @@ const Home = () => {
             <h3 className="h4 fw-bold text-dark m-0">Tin đăng mới nhất</h3>
           </header>
           <button 
-            className={`btn fw-medium d-flex align-items-center gap-2 ${showFilters ? 'btn-primary' : 'btn-outline-primary bg-white'}`}
+            className={`btn fw-medium d-flex align-items-center gap-2 ${showFilters ? 'btn-primary' : 'btn-outline-primary'}`}
             onClick={() => setShowFilters(!showFilters)}
             style={{ borderRadius: '8px' }}
           >
