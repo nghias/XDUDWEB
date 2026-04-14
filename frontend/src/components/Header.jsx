@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -8,64 +7,7 @@ const Header = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [allRooms, setAllRooms] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchContainerRef = useRef(null);
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch("https://xdudweb-php.onrender.com/api/tat-ca-tin-dang");
-        const data = await response.json();
-        setAllRooms(data);
-      } catch (error) {
-        console.error("Lỗi lấy dữ liệu gợi ý:", error);
-      }
-    };
-    fetchRooms();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-
-    if (value.trim() !== "") {
-      const filtered = allRooms
-        .filter((room) => room.tieu_de.toLowerCase().includes(value.toLowerCase()))
-        .slice(0, 5);
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  };
-
-  const handleSearch = (e) => {
-    if (e.key === "Enter" && searchTerm.trim() !== "") {
-      setShowSuggestions(false);
-      navigate(`/search?tu_khoa=${encodeURIComponent(searchTerm)}`);
-    }
-  };
-
-  const handleSelectSuggestion = (title) => {
-    setSearchTerm(title);
-    setShowSuggestions(false);
-    navigate(`/search?tu_khoa=${encodeURIComponent(title)}`);
-  };
-
-  useEffect(() => {
-    const handleClickOutsideSearch = (event) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutsideSearch);
-    return () => document.removeEventListener("mousedown", handleClickOutsideSearch);
-  }, []);
-
+  // Lấy dữ liệu user từ localStorage
   let userData = null;
   try {
     const userSession = localStorage.getItem("user_session");
@@ -81,6 +23,7 @@ const Header = () => {
     ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ho_ten)}&background=0D8ABC&color=fff`
     : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
+  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -91,6 +34,7 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Xử lý Đăng xuất
   const handleLogout = async () => {
     setIsLoggingOut(true);
     const token = localStorage.getItem("auth_token");
@@ -121,7 +65,7 @@ const Header = () => {
       <div className="container py-2">
         <div className="d-flex align-items-center justify-content-between">
           
-          {/* LOGO SVG */}
+          {/* LOGO SVG (Bên trái) */}
           <Link to="/" className="navbar-brand d-flex align-items-center gap-2 mb-0 text-decoration-none">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" className="flex-shrink-0">
               <path d="M50 5 C30 5 15 20 15 40 C15 65 50 95 50 95 C50 95 85 65 85 40 C85 20 70 5 50 5 Z" fill="#0D8ABC" />
@@ -133,38 +77,7 @@ const Header = () => {
             <span className="fw-bold text-primary d-none d-md-block">Tìm Trọ Trực Tuyến</span>
           </Link>
 
-          <div className="flex-grow-1 mx-3 mx-lg-4 position-relative" style={{ maxWidth: "500px" }} ref={searchContainerRef}>
-            <div className="bg-light rounded-pill px-3 py-2 d-flex align-items-center border">
-              <Search size={18} className="text-secondary me-2 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Tìm quận, tên đường..."
-                className="border-0 w-100 search-input bg-transparent"
-                style={{ boxShadow: "none", outline: "none" }}
-                value={searchTerm}
-                onChange={handleInputChange}
-                onKeyDown={handleSearch}
-                onFocus={() => searchTerm && setShowSuggestions(true)}
-              />
-            </div>
-
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="position-absolute w-100 bg-white mt-1 shadow-lg rounded-3 border list-unstyled py-2" style={{ zIndex: 1050, top: "100%" }}>
-                {suggestions.map((room) => (
-                  <li
-                    key={room.id}
-                    className="px-3 py-2 suggestion-item d-flex align-items-center gap-2"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleSelectSuggestion(room.tieu_de)}
-                  >
-                    <Search size={14} className="text-muted" />
-                    <span className="text-dark text-truncate">{room.tieu_de}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
+          {/* MENU & THÔNG TIN USER (Bên phải) */}
           <div className="d-flex align-items-center gap-3">
             <ul className="navbar-nav d-none d-lg-flex flex-row gap-4 me-3 mb-0 align-items-center">
               
@@ -195,6 +108,7 @@ const Header = () => {
               </li>
             </ul>
 
+            {/* AVATAR & DROPDOWN */}
             <div ref={dropdownRef}>
               {userData ? (
                 <div className="dropdown">
@@ -226,14 +140,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      <style>{`
-        .search-input { color: #000000 !important; font-size: 14px; }
-        .search-input::placeholder { color: #6c757d !important; opacity: 1; }
-        .search-input:focus { outline: none; }
-        .suggestion-item:hover { background-color: #f8f9fa; color: #0d6efd !important; }
-        .suggestion-item span:hover { color: #0d6efd; }
-      `}</style>
     </header>
   );
 };
