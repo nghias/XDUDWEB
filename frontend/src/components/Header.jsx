@@ -17,9 +17,7 @@ const Header = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch(
-          "https://xdudweb-php.onrender.com/api/tat-ca-tin-dang",
-        );
+        const response = await fetch("https://xdudweb-php.onrender.com/api/tat-ca-tin-dang");
         const data = await response.json();
         setAllRooms(data);
       } catch (error) {
@@ -35,11 +33,8 @@ const Header = () => {
 
     if (value.trim() !== "") {
       const filtered = allRooms
-        .filter((room) =>
-          room.tieu_de.toLowerCase().includes(value.toLowerCase()),
-        )
+        .filter((room) => room.tieu_de.toLowerCase().includes(value.toLowerCase()))
         .slice(0, 5);
-
       setSuggestions(filtered);
       setShowSuggestions(true);
     } else {
@@ -63,16 +58,12 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutsideSearch = (event) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target)
-      ) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
         setShowSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutsideSearch);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutsideSearch);
+    return () => document.removeEventListener("mousedown", handleClickOutsideSearch);
   }, []);
 
   let userData = null;
@@ -126,14 +117,11 @@ const Header = () => {
   };
 
   return (
-    <header
-      className="sticky-top shadow-sm bg-white border-bottom"
-      style={{ zIndex: 2000 }}
-    >
+    <header className="sticky-top shadow-sm bg-white border-bottom" style={{ zIndex: 2000 }}>
       <div className="container py-2">
         <div className="d-flex align-items-center justify-content-between">
           
-          {/* LOGO MỚI (SVG) */}
+          {/* LOGO SVG */}
           <Link to="/" className="navbar-brand d-flex align-items-center gap-2 mb-0 text-decoration-none">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40" className="flex-shrink-0">
               <path d="M50 5 C30 5 15 20 15 40 C15 65 50 95 50 95 C50 95 85 65 85 40 C85 20 70 5 50 5 Z" fill="#0D8ABC" />
@@ -143,14 +131,9 @@ const Header = () => {
               <line x1="54" y1="42" x2="58" y2="46" stroke="#FF8C00" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
             <span className="fw-bold text-primary d-none d-md-block">Tìm Trọ Trực Tuyến</span>
-
           </Link>
 
-          <div
-            className="flex-grow-1 mx-3 mx-lg-4 position-relative"
-            style={{ maxWidth: "500px" }}
-            ref={searchContainerRef}
-          >
+          <div className="flex-grow-1 mx-3 mx-lg-4 position-relative" style={{ maxWidth: "500px" }} ref={searchContainerRef}>
             <div className="bg-light rounded-pill px-3 py-2 d-flex align-items-center border">
               <Search size={18} className="text-secondary me-2 flex-shrink-0" />
               <input
@@ -166,10 +149,7 @@ const Header = () => {
             </div>
 
             {showSuggestions && suggestions.length > 0 && (
-              <ul
-                className="position-absolute w-100 bg-white mt-1 shadow-lg rounded-3 border list-unstyled py-2"
-                style={{ zIndex: 1050, top: "100%" }}
-              >
+              <ul className="position-absolute w-100 bg-white mt-1 shadow-lg rounded-3 border list-unstyled py-2" style={{ zIndex: 1050, top: "100%" }}>
                 {suggestions.map((room) => (
                   <li
                     key={room.id}
@@ -178,23 +158,12 @@ const Header = () => {
                     onClick={() => handleSelectSuggestion(room.tieu_de)}
                   >
                     <Search size={14} className="text-muted" />
-                    <span className="text-dark text-truncate">
-                      {room.tieu_de}
-                    </span>
+                    <span className="text-dark text-truncate">{room.tieu_de}</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
-          {/* Trong phần MENU VÀ USER PHẢI ở Header.jsx */}
-          {userData && (
-            <Link
-              to="/dang-tin"
-              className="btn btn-warning fw-bold d-none d-md-block me-2 rounded-pill"
-            >
-              + Đăng tin
-            </Link>
-          )}
 
           <div className="d-flex align-items-center gap-3">
             <ul className="navbar-nav d-none d-lg-flex flex-row gap-4 me-3 mb-0 align-items-center">
@@ -209,10 +178,7 @@ const Header = () => {
               {/* QUẢN LÝ TIN ĐĂNG: Chỉ hiện với Chủ nhà hoặc Admin */}
               {(userData?.vai_tro === 'chu_nha' || userData?.vai_tro === 'quan_tri') && (
                 <li className="nav-item">
-                  <Link
-                    className="nav-link fw-semibold text-primary"
-                    to="/quan-ly-tin-dang"
-                  >
+                  <Link className="nav-link fw-semibold text-primary" to="/quan-ly-tin-dang">
                     <i className="bi bi-list-task me-1"></i> Quản lý tin đăng
                   </Link>
                 </li>
@@ -222,71 +188,19 @@ const Header = () => {
             <div ref={dropdownRef}>
               {userData ? (
                 <div className="dropdown">
-                  <div
-                    className="d-flex align-items-center gap-2"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    <span className="d-none d-xl-block fw-medium">
-                      {userData.ho_ten}
-                    </span>
-                    <img
-                      src={userData.anh_dai_dien || defaultAvatar}
-                      alt="Avatar"
-                      className="rounded-circle border"
-                      width="40"
-                      height="40"
-                      style={{ objectFit: "cover" }}
-                    />
+                  <div className="d-flex align-items-center gap-2" style={{ cursor: "pointer" }} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                    <span className="d-none d-xl-block fw-medium">{userData.ho_ten}</span>
+                    <img src={userData.anh_dai_dien || defaultAvatar} alt="Avatar" className="rounded-circle border" width="40" height="40" style={{ objectFit: "cover" }} />
                   </div>
 
                   {isDropdownOpen && (
-                    <ul
-                      className="dropdown-menu dropdown-menu-end show shadow-lg border"
-                      style={{
-                        position: "absolute",
-                        top: "100%",
-                        right: "0",
-                        marginTop: "10px",
-                        zIndex: 3000, // Ép nó nổi lên trên tất cả
-                        minWidth: "200px",
-                      }}
-                    >
+                    <ul className="dropdown-menu dropdown-menu-end show shadow-lg border" style={{ position: "absolute", top: "100%", right: "0", marginTop: "10px", zIndex: 3000, minWidth: "200px" }}>
+                      <li><Link className="dropdown-item py-2" to="/profile">Thông tin cá nhân</Link></li>
+                      <li><Link className="dropdown-item py-2" to="/forgot-password">Quên mật khẩu</Link></li>
+                      <li><Link className="dropdown-item py-2" to="/change-password">Đổi mật khẩu</Link></li>
+                      <li><hr className="dropdown-divider" /></li>
                       <li>
-                        <Link className="dropdown-item py-2" to="/profile">
-                          Thông tin cá nhân
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item py-2"
-                          to="/forgot-password"
-                        >
-                          Quên mật khẩu
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className="dropdown-item py-2"
-                          to="/change-password"
-                        >
-                          Đổi mật khẩu
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item py-2" to="/my-posts">
-                          Tin đăng của tôi
-                        </Link>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item text-danger fw-bold py-2"
-                          onClick={handleLogout}
-                          disabled={isLoggingOut}
-                        >
+                        <button className="dropdown-item text-danger fw-bold py-2" onClick={handleLogout} disabled={isLoggingOut}>
                           {isLoggingOut ? "Đang xử lý..." : "Đăng xuất"}
                         </button>
                       </li>
@@ -294,11 +208,7 @@ const Header = () => {
                   )}
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  className="btn btn-primary fw-medium px-4 text-nowrap"
-                  style={{ borderRadius: "8px" }}
-                >
+                <Link to="/login" className="btn btn-primary fw-medium px-4 text-nowrap" style={{ borderRadius: "8px" }}>
                   Đăng nhập
                 </Link>
               )}
