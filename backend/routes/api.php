@@ -7,7 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
-use App\Http\Controllers\HinhAnhTinController;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Admin\GoiDichVuController;
 use App\Models\LoaiPhong;
 use App\Models\TienIch;
@@ -140,4 +140,13 @@ Route::prefix('admin/goidichvu')->group(function () {
     Route::post('/', [GoiDichVuController::class, 'store']);     
     Route::put('/{id}', [GoiDichVuController::class, 'update']); 
 }); 
+
+// Route bí mật để xóa cache trên Host không có Terminal
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return "Tất cả Cache đã được xóa sạch sẽ! Bạn có thể đóng trang này và test lại.";
+});
 
