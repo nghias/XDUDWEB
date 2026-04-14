@@ -8,6 +8,7 @@ use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\HinhAnhTinController;
+use App\Http\Controllers\Admin\GoiDichVuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,3 +127,16 @@ Route::put('/cap-nhat-anh-tin/{id}',
 
 Route::delete('/xoa-anh-tin/{id}',
 [HinhAnhTinController::class,'xoaAnh']);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| DichVu
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin/goidichvu')->group(function () {
+    Route::get('/', [GoiDichVuController::class, 'index']);      
+    Route::post('/', [GoiDichVuController::class, 'store']);     
+    Route::put('/{id}', [GoiDichVuController::class, 'update']); 
+}); 
