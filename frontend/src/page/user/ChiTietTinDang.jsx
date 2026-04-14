@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { MapPin, DollarSign, Home, Loader2 } from "lucide-react";
+// Thêm import Phone và MessageCircle từ lucide-react để làm icon cho nút
+import { MapPin, DollarSign, Home, Loader2, Phone, MessageCircle } from "lucide-react";
 
 const ChiTietTinDang = () => {
   const { id } = useParams(); // Lấy ID từ URL
@@ -25,10 +26,13 @@ const ChiTietTinDang = () => {
   if (loading) return <div className="text-center mt-5"><Loader2 className="animate-spin" /> Đang tải chi tiết...</div>;
   if (!room) return <div className="text-center mt-5">Không tìm thấy thông tin phòng này.</div>;
 
+  // Lấy số điện thoại của chủ nhà từ API
+  const soDienThoai = room.nguoi_dung?.so_dien_thoai;
+
   return (
     <div className="container mt-4 pb-5">
       <div className="row">
-        {/* Phần hình ảnh (Tạm thời dùng ảnh mock giống trang Home cho đẹp) */}
+        {/* Phần hình ảnh */}
         <div className="col-lg-8">
           <img 
             src={`https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000&auto=format&fit=crop&sig=${id}`} 
@@ -38,11 +42,11 @@ const ChiTietTinDang = () => {
           
           <h1 className="fw-bold mt-4">{room.tieu_de}</h1>
           <p className="text-muted d-flex align-items-center gap-2">
-            <MapPin size={18} className="text-danger" /> {room.vi_tri?.ten_vi_tri}
+            <MapPin size={18} className="text-danger" /> {room.vi_tri?.ten_vi_tri || "Chưa cập nhật địa điểm"}
           </p>
           <hr />
           <h4 className="fw-bold">Mô tả chi tiết</h4>
-          <p style={{ whiteSpace: 'pre-line' }}>{room.mo_ta || "Chưa có mô tả cho tin đăng này."}</p>
+          <p style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>{room.mo_ta || "Chưa có mô tả cho tin đăng này."}</p>
         </div>
 
         {/* Phần thông tin giá và chủ nhà bên phải */}
@@ -55,19 +59,43 @@ const ChiTietTinDang = () => {
               <span className="text-muted">/tháng</span>
             </div>
             
-            <div className="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3">
+            <div className="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-4">
                <img 
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(room.nguoi_dung?.ho_ten || 'User')}`} 
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(room.nguoi_dung?.ho_ten || 'User')}&background=0D8ABC&color=fff`} 
                 className="rounded-circle" width="50" alt="avatar" 
                />
                <div>
                   <div className="fw-bold">{room.nguoi_dung?.ho_ten || "Chủ nhà"}</div>
-                  <div className="small text-muted">Đang hoạt động</div>
+                  <div className="small text-success fw-medium">Đang hoạt động</div>
                </div>
             </div>
 
-            <button className="btn btn-primary w-100 fw-bold py-2 mb-2">Liên hệ ngay</button>
-            <button className="btn btn-outline-success w-100 fw-bold py-2">Nhắn tin Zalo</button>
+            {/* KIỂM TRA: Nếu có số điện thoại thì hiện nút, không có thì báo lỗi */}
+            {soDienThoai ? (
+              <>
+                {/* Nút Gọi Điện: Dùng href="tel:..." */}
+                <a 
+                  href={`tel:${soDienThoai}`} 
+                  className="btn btn-primary w-100 fw-bold py-2 mb-2 d-flex justify-content-center align-items-center gap-2"
+                >
+                  <Phone size={18} /> Liên hệ: {soDienThoai}
+                </a>
+
+                {/* Nút Zalo: Dùng href="https://zalo.me/..." */}
+                <a 
+                  href={`https://zalo.me/${soDienThoai}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-outline-success w-100 fw-bold py-2 d-flex justify-content-center align-items-center gap-2"
+                >
+                  <MessageCircle size={18} /> Nhắn tin Zalo
+                </a>
+              </>
+            ) : (
+              <button className="btn btn-secondary w-100 fw-bold py-2" disabled>
+                Chủ nhà chưa cập nhật SĐT
+              </button>
+            )}
           </div>
         </div>
       </div>
