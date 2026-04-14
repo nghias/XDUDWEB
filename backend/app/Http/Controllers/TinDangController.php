@@ -70,12 +70,13 @@ class TinDangController extends Controller
             if ($request->hasFile('hinh_anh')) {
                 foreach ($request->file('hinh_anh') as $index => $file) {
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $file->move(public_path('uploads/images'), $filename); // Lưu vào folder public/uploads/images
+                    $file->move(public_path('uploads/images'), $filename); 
                     
-                    DB::table('hinh_anh_tin_dang')->insert([
+                    // SỬA TÊN BẢNG Ở ĐÂY CHO KHỚP DB: hinh_anh_tin
+                    DB::table('hinh_anh_tin')->insert([
                         'ma_tin_dang' => $tin->id,
                         'duong_dan_anh' => '/uploads/images/' . $filename,
-                        'la_anh_bia' => $index === 0 ? 1 : 0 // Ảnh đầu tiên làm ảnh bìa
+                        'la_anh_bia' => $index === 0 ? 1 : 0 
                     ]);
                 }
             }
@@ -140,11 +141,11 @@ class TinDangController extends Controller
 
             // Xử lý ảnh: NẾU người dùng upload ảnh mới thì xóa ảnh cũ trong DB và thêm mới
             if ($request->hasFile('hinh_anh')) {
-                DB::table('hinh_anh_tin_dang')->where('ma_tin_dang', $tin->id)->delete();
+                DB::table('hinh_anh_tin')->where('ma_tin_dang', $tin->id)->delete();
                 foreach ($request->file('hinh_anh') as $index => $file) {
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $file->move(public_path('uploads/images'), $filename);
-                    DB::table('hinh_anh_tin_dang')->insert([
+                    DB::table('hinh_anh_tin')->insert([
                         'ma_tin_dang' => $tin->id,
                         'duong_dan_anh' => '/uploads/images/' . $filename,
                         'la_anh_bia' => $index === 0 ? 1 : 0 
