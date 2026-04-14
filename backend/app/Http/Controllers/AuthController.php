@@ -76,11 +76,11 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
+        // Đổi User thành Model tương ứng của bạn (ví dụ NguoiDung)
         $user = User::where('email', $request->email)->first();
         if (!$user) return response()->json(['message' => 'Email không tồn tại!'], 404);
 
-        // Tạo mã token ngẫu nhiên
-        $token = Str::random(60);
+        $token = rand(100000, 999999); // Tạo mã 6 số
 
         // Lưu vào bảng quen_mat_khau
         DB::table('quen_mat_khau')->updateOrInsert(
@@ -88,16 +88,18 @@ class AuthController extends Controller
             ['token' => $token, 'ngay_tao' => Carbon::now()]
         );
 
-        // Gửi email (Dùng hàm gửi mail thô sơ cho nhanh)
-        $resetLink = "http://localhost:3000/reset-password?token=" . $token . "&email=" . $request->email;
+        // SỬA DÒNG NÀY: Thay localhost bằng domain Vercel thực tế của Frontend
+        $frontendUrl = "https://xdudweb.vercel.app"; // Thay bằng link React của bạn
+        $resetLink = $frontendUrl . "/reset-password?token=" . $token . "&email=" . $request->email;
 
-        Mail::send([], [], function ($message) use ($user, $resetLink) {
+        // Gửi email (Laravel sẽ tự lấy cấu hình Brevo ở file .env để gửi đi)
+        Mail::send([], [], function ($message) use ($user, $token) {
             $message->to($user->email)
-                ->subject('Thiết lập lại mật khẩu')
-                ->html("Chào {$user->ho_ten}, bấm vào link sau để đổi mật khẩu: <a href='{$resetLink}'>Đổi mật khẩu ngay</a>");
+                ->subject('Mã xác nhận đổi mật khẩu')
+                ->html("<h3>Chào {$user->ho_ten},</h3><p>Mã xác nhận đổi mật khẩu của bạn là: <b>{$token}</b></p>");
         });
 
-        return response()->json(['message' => 'Link đổi mật khẩu đã được gửi vào Email của bạn!']);
+        return response()->json(['message' => 'Mã xác nhận đã được gửi vào Email của bạn!']);
     }
 
     // Hàm đặt lại mật khẩu mới
