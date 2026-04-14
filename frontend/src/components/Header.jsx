@@ -171,7 +171,7 @@ const Header = () => {
               {/* XEM TIN ĐĂNG: Mọi quyền đều xem được */}
               <li className="nav-item">
                 <Link className="nav-link fw-semibold text-dark" to="/">
-                  Xem tin đăng thuê trọ
+                  <i className="bi bi-house-door me-1"></i> Tìm trọ
                 </Link>
               </li>
 
@@ -183,6 +183,16 @@ const Header = () => {
                   </Link>
                 </li>
               )}
+              <li className="nav-item">
+                <Link className="nav-link fw-semibold text-dark" to="">
+                  Chức Năng Tạm
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link fw-semibold text-dark" to="">
+                  Chức Năng Tạm
+                </Link>
+              </li>
             </ul>
 
             <div ref={dropdownRef}>

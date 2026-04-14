@@ -277,7 +277,7 @@ const QuanLyTinDang = () => {
                     style={{ borderRadius: '8px' }}
                     onClick={openAddForm}
                 >
-                    <i className="bi bi-plus-circle me-2"></i> + Đăng tin
+                    <i className="bi bi-plus-circle me-2"></i> Đăng tin
                 </button>
             </div>
 
