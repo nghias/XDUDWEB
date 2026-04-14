@@ -80,8 +80,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user) return response()->json(['message' => 'Email không tồn tại!'], 404);
 
-        // Tạo mã token ngẫu nhiên
-        $token = Str::random(60);
+        $token = rand(100000, 999999); // Tạo mã 6 số
 
         // Lưu vào bảng quen_mat_khau
         DB::table('quen_mat_khau')->updateOrInsert(
@@ -94,18 +93,13 @@ class AuthController extends Controller
         $resetLink = $frontendUrl . "/reset-password?token=" . $token . "&email=" . $request->email;
 
         // Gửi email (Laravel sẽ tự lấy cấu hình Brevo ở file .env để gửi đi)
-        Mail::send([], [], function ($message) use ($user, $resetLink) {
+        Mail::send([], [], function ($message) use ($user, $token) {
             $message->to($user->email)
-                ->subject('Thiết lập lại mật khẩu - Tìm Trọ Trực Tuyến')
-                ->html("
-                    <h3>Chào {$user->ho_ten},</h3>
-                    <p>Bạn đã yêu cầu đặt lại mật khẩu. Bấm vào link sau để tiến hành:</p>
-                    <p><a href='{$resetLink}' style='padding: 10px 15px; background: #0d6efd; color: #fff; text-decoration: none; border-radius: 5px;'>Đổi mật khẩu ngay</a></p>
-                    <p>Nếu không phải bạn yêu cầu, vui lòng bỏ qua email này.</p>
-                ");
+                ->subject('Mã xác nhận đổi mật khẩu')
+                ->html("<h3>Chào {$user->ho_ten},</h3><p>Mã xác nhận đổi mật khẩu của bạn là: <b>{$token}</b></p>");
         });
 
-        return response()->json(['message' => 'Link đổi mật khẩu đã được gửi vào Email của bạn!']);
+        return response()->json(['message' => 'Mã xác nhận đã được gửi vào Email của bạn!']);
     }
 
     // Hàm đặt lại mật khẩu mới
