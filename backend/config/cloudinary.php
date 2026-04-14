@@ -1,0 +1,14 @@
+<?php
+
+return [
+    'cloud_url' => env('CLOUDINARY_URL'),
+    
+    'upload_preset' => env('CLOUDINARY_UPLOAD_PRESET', 'ml_default'),
+
+    // Đoạn này cực kỳ quan trọng để fix lỗi bạn đang gặp
+    'cloud' => [
+        'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+        'api_key'    => env('CLOUDINARY_API_KEY'),
+        'api_secret' => env('CLOUDINARY_API_SECRET'),
+    ],
+];
