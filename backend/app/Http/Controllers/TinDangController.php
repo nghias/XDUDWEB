@@ -82,9 +82,8 @@ class TinDangController extends Controller
             // 4. Upload ảnh lên Cloudinary
             if ($request->hasFile('hinh_anh')) {
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    
-                    // CÚ PHÁP MỚI: Tự động up lên Cloudinary và lấy link an toàn
-                    $url = $file->storeOnCloudinary('timtro_duan')->getSecurePath();
+                    $result = Cloudinary::upload($file->getRealPath(), ['folder' => 'timtro_duan']);
+                    $url = $result->getSecurePath();
 
                     DB::table('hinh_anh_tin')->insert([
                         'ma_tin_dang' => $tin->id,
@@ -130,10 +129,10 @@ class TinDangController extends Controller
             if ($request->hasFile('hinh_anh')) {
                 DB::table('hinh_anh_tin')->where('ma_tin_dang', $id)->delete();
                 foreach ($request->file('hinh_anh') as $index => $file) {
-                    $url = $file->storeOnCloudinary('timtro_duan')->getSecurePath();
-
+                    $result = Cloudinary::upload($file->getRealPath(), ['folder' => 'timtro_duan']);
+                    $url = $result->getSecurePath();
                     DB::table('hinh_anh_tin')->insert([
-                        'ma_tin_dang' => $tin->id,
+                        'ma_tin_dang' => $id,
                         'duong_dan_anh' => $url,
                         'la_anh_bia' => $index === 0 ? 1 : 0 
                     ]);
