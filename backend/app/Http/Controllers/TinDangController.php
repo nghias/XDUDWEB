@@ -6,7 +6,6 @@ use App\Models\TinDang;
 use App\Models\HinhAnhTin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class TinDangController extends Controller
 {

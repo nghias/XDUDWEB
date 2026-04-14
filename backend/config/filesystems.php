@@ -59,6 +59,10 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+            'cloud_url' => env('CLOUDINARY_URL'),
+        ],
 
     ],
 
