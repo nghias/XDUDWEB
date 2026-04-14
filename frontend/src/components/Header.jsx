@@ -88,18 +88,6 @@ const Header = () => {
                 </Link>
               </li>
               
-              <li className="nav-item">
-                <Link className="nav-link custom-nav-link text-dark fw-medium" to="/kham-pha">
-                  <i className="bi bi-compass me-1"></i> Khám phá
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className="nav-link custom-nav-link text-dark fw-medium" to="/cam-nang">
-                  <i className="bi bi-journal-text me-1"></i> Cẩm nang
-                </Link>
-              </li>
-
               {/* QUẢN LÝ TIN ĐĂNG: Chỉ hiện với Chủ nhà hoặc Admin */}
               {(userData?.vai_tro === 'chu_nha' || userData?.vai_tro === 'quan_tri') && (
                 <li className="nav-item">
@@ -108,6 +96,18 @@ const Header = () => {
                   </Link>
                 </li>
               )}
+              
+              <li className="nav-item">
+                <Link className="nav-link custom-nav-link text-dark fw-medium" to="">
+                  <i className="bi bi-compass me-1"></i> Chức năng tạm
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link className="nav-link custom-nav-link text-dark fw-medium" to="">
+                  <i className="bi bi-journal-text me-1"></i> Chức năng tạm
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -124,7 +124,7 @@ const Header = () => {
                       {userData.ho_ten}
                     </div>
                     <div className="text-muted" style={{ fontSize: "12px" }}>
-                      {userData.vai_tro === 'chu_nha' ? 'Chủ nhà' : 'Thành viên'}
+                      {userData.vai_tro === 'chu_nha' ? 'Chủ nhà' : userData.vai_tro === 'quan_tri' ? 'Quản trị viên' : 'Thành viên'}
                     </div>
                   </div>
                   <img 
