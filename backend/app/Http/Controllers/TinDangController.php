@@ -21,17 +21,10 @@ class TinDangController extends Controller
     }
 
     // GET /api/chi-tiet-tin-dang/{id}
-    public function chiTietTinDang($id)
-    {
-        $tin = TinDang::with(['nguoiDung','hinhAnh','loaiPhong'])
-            ->find($id);
-
-        if(!$tin){
-            return response()->json([
-                'message'=>'Tin đăng không tồn tại'
-            ],404);
-        }
-
+    public function chiTietTinDang($id) {
+        // Kéo theo vị trí, loại phòng, hình ảnh và tiện ích
+        $tin = TinDang::with(['viTri', 'loaiPhong', 'hinhAnh', 'tienIch'])->find($id);
+        if(!$tin) return response()->json(['message' => 'Không tìm thấy'], 404);
         return response()->json($tin);
     }
 
