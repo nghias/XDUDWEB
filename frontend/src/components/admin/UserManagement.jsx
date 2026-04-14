@@ -17,8 +17,8 @@ const UserManagement = () => {
 
   // Hàm đính kèm Token bảo mật cho mỗi request
   const getAxiosConfig = () => {
-    // Lưu ý: Thay "access_token" bằng đúng tên key lưu token của bạn dưới LocalStorage
-    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    // Sửa thành auth_token cho khớp với lúc đăng nhập
+    const token = localStorage.getItem("auth_token"); 
     return {
       headers: {
         Authorization: `Bearer ${token}`,

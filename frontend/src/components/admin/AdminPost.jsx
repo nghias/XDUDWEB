@@ -10,7 +10,8 @@ const PostManagement = () => {
   const API_URL = "https://xdudweb-php.onrender.com/api/admin/tin-dang";
 
   const getAxiosConfig = () => {
-    const token = localStorage.getItem("access_token") || localStorage.getItem("token");
+    // Sửa thành auth_token cho khớp với lúc đăng nhập
+    const token = localStorage.getItem("auth_token"); 
     return {
       headers: {
         Authorization: `Bearer ${token}`,
