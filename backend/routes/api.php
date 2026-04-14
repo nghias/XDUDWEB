@@ -8,8 +8,9 @@ use App\Http\Controllers\TinDangController;
 use App\Http\Controllers\TinNhanController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\HinhAnhTinController;
-use App\Http\Controllers\DatPhongController;
 use App\Http\Controllers\Admin\GoiDichVuController;
+use App\Models\LoaiPhong;
+use App\Models\TienIch;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,21 +111,23 @@ Route::delete('/xoa-nguoi-dung/{id}',
 
 /*
 |--------------------------------------------------------------------------
-| HÌNH ẢNH TIN ĐĂNG
+| LoaiPhong
 |--------------------------------------------------------------------------
 */
 
-Route::get('/anh-tin/{ma_tin_dang}',
-[HinhAnhTinController::class,'danhSachAnh']);
+Route::get('/loai-phong', function () {
+    return response()->json(LoaiPhong::all());
+});
 
-Route::post('/them-anh-tin',
-[HinhAnhTinController::class,'themAnh']);
+/*
+|--------------------------------------------------------------------------
+| TienIch
+|--------------------------------------------------------------------------
+*/
 
-Route::put('/cap-nhat-anh-tin/{id}',
-[HinhAnhTinController::class,'capNhatAnh']);
-
-Route::delete('/xoa-anh-tin/{id}',
-[HinhAnhTinController::class,'xoaAnh']);
+Route::get('/tien-ich', function () {
+    return response()->json(TienIch::all());
+});
 
 /*
 |--------------------------------------------------------------------------
