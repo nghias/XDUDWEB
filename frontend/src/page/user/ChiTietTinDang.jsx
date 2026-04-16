@@ -32,13 +32,44 @@ const ChiTietTinDang = () => {
   return (
     <div className="container mt-4 pb-5">
       <div className="row">
-        {/* Phần hình ảnh */}
-        <div className="col-lg-8">
-          <img 
-            src={`https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000&auto=format&fit=crop&sig=${id}`} 
-            className="img-fluid rounded-4 shadow-sm w-100" 
-            alt={room.tieu_de} 
-          />
+
+        {/* Phần hình ảnh + ảnh bìa */}
+<div className="col-lg-8">
+  <div className="position-relative">
+    <img 
+      src={
+        room.hinh_anh && room.hinh_anh.length > 0 
+          ? (room.hinh_anh.find(img => img.la_anh_bia === 1)?.duong_dan_anh || room.hinh_anh[0].duong_dan_anh)
+          : "https://via.placeholder.com/800x450?text=Chua+Co+Anh"
+      } 
+      className="img-fluid rounded-4 shadow-sm w-100" 
+      style={{ maxHeight: '500px', objectFit: 'cover' }}
+      alt={room.tieu_de} 
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000";
+      }}
+    />
+  </div>
+
+  {/* Danh sách các ảnh phụ */}
+  {room.hinh_anh && room.hinh_anh.length > 1 && (
+    <div className="d-flex gap-2 mt-3 overflow-auto pb-2">
+      {room.hinh_anh.map((img, index) => (
+        <img 
+          key={index}
+          src={img.duong_dan_anh} 
+          className="rounded-3 border" 
+          style={{ width: '120px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
+          alt={`Ảnh phụ ${index}`}
+          onClick={(e) => {
+             // Logic để khi click vào ảnh nhỏ thì ảnh to ở trên thay đổi (nếu ông muốn làm thêm)
+             document.querySelector('.img-fluid').src = img.duong_dan_anh;
+          }}
+        />
+      ))}
+    </div>
+  )}
           
           <h1 className="fw-bold mt-4">{room.tieu_de}</h1>
           <p className="text-muted d-flex align-items-center gap-2">
