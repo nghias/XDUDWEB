@@ -58,7 +58,7 @@ const DangTin = () => {
         const [lp, ti, p] = await Promise.all([
           axios.get(`${API_URL}/api/loai-phong`),
           axios.get(`${API_URL}/api/tien-ich`),
-          axios.get("https://provinces.op en-api.vn/api/p/"),
+          axios.get("https://provinces.open-api.vn/api/p/"),
         ]);
         setDanhMucLoaiPhong(lp.data);
         setDanhMucTienIch(ti.data);
