@@ -10,14 +10,14 @@ class GoiDichVu extends Model
     
     public $timestamps = false; 
 
-    // CHÚ Ý PHẦN NÀY: Phải khai báo đủ các cột thì Laravel mới cho phép lưu
     protected $fillable = [
         'ten_goi',
         'gia_tien',
         'thoi_han_ngay',
         'muc_uu_tien',
-        'so_tin_toi_da', // Thêm dòng này để lưu được số tin
-        'noi_bat',       // Thêm dòng này để lưu trạng thái Nổi bật
-        'mo_ta'          // Thêm dòng này để lưu mô tả
+        // Thêm 3 trường dưới đây vào (đảm bảo tên trùng với cột trong MySQL)
+        'so_tin_toi_da', 
+        'la_goi_noi_bat', 
+        'mo_ta',
     ];
 }
