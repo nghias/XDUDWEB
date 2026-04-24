@@ -17,16 +17,17 @@ const UserManagement = () => {
   const BASE_API = "https://xdudweb-php.onrender.com/api"; 
   const API_URL = `${BASE_API}/admin/users`; 
 
-  const getAxiosConfig = () => {
+const getAxiosConfig = () => {
+  // SỬA DÒNG NÀY: đổi "token" thành "auth_token"
+  const token = localStorage.getItem("auth_token"); 
 
-    return {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json"
-      }
-    };
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json"
+    }
   };
-
+};
   // === FETCH API (LẤY DANH SÁCH) ===
   const fetchUsers = async () => {
     setLoading(true);
