@@ -10,15 +10,14 @@ class GoiDichVu extends Model
     
     public $timestamps = false; 
 
-    // Cho phép thêm/sửa các trường dữ liệu sau
     protected $fillable = [
         'ten_goi',
         'gia_tien',
         'thoi_han_ngay',
         'muc_uu_tien',
-        // --- 3 trường mới thêm vào ---
+        // Thêm 3 trường dưới đây vào (đảm bảo tên trùng với cột trong MySQL)
         'so_tin_toi_da', 
-        'noi_bat',       
-        'mo_ta'          
+        'la_goi_noi_bat', 
+        'mo_ta',
     ];
 }

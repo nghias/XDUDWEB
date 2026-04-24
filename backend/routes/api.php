@@ -109,7 +109,7 @@ Route::prefix('admin/goidichvu')->group(function () {
     Route::post('/', [GoiDichVuController::class, 'store']);     
     Route::put('/{id}', [GoiDichVuController::class, 'update']); 
 }); 
-
+Route::delete('/{id}', [GoiDichVuController::class, 'destroy']);
 /*
 |--------------------------------------------------------------------------
 | SYSTEM UTILITIES

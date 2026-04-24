@@ -8,19 +8,37 @@ const PackageManagement = () => {
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  // Gộp các trường của Laravel và giao diện AdminLayout
   const initialPackageState = {
-    package_id: null,
-    package_name: "",
-    price: "",
-    duration_days: 30,
-    max_posts: 1,
-    is_highlight: false,
-    description: "",
+    id: null,
+    ten_goi: "",
+    gia_tien: "",
+    thoi_han_ngay: 30,
+    muc_uu_tien: 1,      // Yêu cầu của Laravel
+    so_tin_toi_da: 1,    // Lấy từ AdminLayout
+    noi_bat: false,      // Lấy từ AdminLayout (is_highlight)
+    mo_ta: "",           // Lấy từ AdminLayout (description)
   };
   const [currentPackage, setCurrentPackage] = useState(initialPackageState);
 
   // Tham chiếu đến Modal DOM Element
   const modalRef = useRef(null);
+
+  // === CẤU HÌNH API & TOKEN ===
+  const BASE_URL = "https://xdudweb-php.onrender.com/api";
+  const PACKAGE_API_URL = `${BASE_URL}/admin/goidichvu`;
+  const TRANSACTION_API_URL = `${BASE_URL}/admin/transactions`;
+
+  // Hàm đính kèm Token bảo mật cho mỗi request
+  const getAxiosConfig = () => {
+    const token = localStorage.getItem("auth_token");
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json"
+      }
+    };
+  };
 
   // === INITIALIZATION ===
   useEffect(() => {
@@ -31,7 +49,7 @@ const PackageManagement = () => {
   // === API CALLS ===
   const loadPackages = async () => {
     try {
-      const res = await axios.get("/admin/packages");
+      const res = await axios.get(PACKAGE_API_URL, getAxiosConfig()); 
       if (res.data && res.data.data) {
         setPackages(res.data.data);
       } else {
@@ -45,11 +63,10 @@ const PackageManagement = () => {
 
   const loadPendingTransactions = async () => {
     try {
-      const res = await axios.get("/admin/transactions/pending");
+      const res = await axios.get(`${TRANSACTION_API_URL}/pending`, getAxiosConfig());
       setPendingTransactions(res.data.data || []);
     } catch (err) {
-      console.error(err);
-      alert("Không tải được giao dịch chờ duyệt!");
+      console.error("Lỗi tải giao dịch:", err);
     }
   };
 
@@ -59,14 +76,20 @@ const PackageManagement = () => {
     try {
       const payload = {
         ...currentPackage,
-        is_highlight: currentPackage.is_highlight ? 1 : 0,
+        gia_tien: Number(currentPackage.gia_tien),
+        thoi_han_ngay: Number(currentPackage.thoi_han_ngay),
+        muc_uu_tien: Number(currentPackage.muc_uu_tien),
+        so_tin_toi_da: Number(currentPackage.so_tin_toi_da),
+        noi_bat: currentPackage.noi_bat ? 1 : 0,
       };
 
       if (isEditMode) {
-        await axios.put(`/admin/packages/${payload.package_id}`, payload);
+        // Cập nhật gói (PUT) có kèm Config chứa Token
+        await axios.put(`${PACKAGE_API_URL}/${payload.id}`, payload, getAxiosConfig());
         alert("Cập nhật thành công!");
       } else {
-        await axios.post("/admin/packages", payload);
+        // Thêm mới gói (POST) có kèm Config chứa Token
+        await axios.post(PACKAGE_API_URL, payload, getAxiosConfig());
         alert("Thêm gói mới thành công!");
       }
 
@@ -81,13 +104,13 @@ const PackageManagement = () => {
   };
 
   const confirmDelete = async (pkg) => {
-    if (!window.confirm(`Bạn chắc chắn muốn xóa gói "${pkg.package_name}"?`)) return;
+    if (!window.confirm(`Bạn chắc chắn muốn xóa gói "${pkg.ten_goi}"?`)) return;
 
     try {
-      await axios.delete(`/admin/packages/${pkg.package_id}`);
+      // Xóa gói (DELETE) có kèm Config chứa Token
+      await axios.delete(`${PACKAGE_API_URL}/${pkg.id}`, getAxiosConfig());
       alert("Xóa thành công!");
-      // Thay vì gọi API lại, có thể cập nhật state ngay lập tức cho mượt
-      setPackages((prev) => prev.filter((p) => p.package_id !== pkg.package_id));
+      setPackages((prev) => prev.filter((p) => p.id !== pkg.id));
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Lỗi khi xóa!");
@@ -97,7 +120,8 @@ const PackageManagement = () => {
   const approve = async (id) => {
     if (!window.confirm("Xác nhận duyệt giao dịch này?")) return;
     try {
-      await axios.patch(`/admin/transactions/${id}/approve`);
+      // Lưu ý: với phương thức PATCH/POST nếu body rỗng thì truyền {} làm tham số thứ 2
+      await axios.patch(`${TRANSACTION_API_URL}/${id}/approve`, {}, getAxiosConfig());
       alert("Duyệt thành công");
       setPendingTransactions((prev) => prev.filter((trx) => trx.transaction_id !== id));
     } catch (err) {
@@ -108,7 +132,7 @@ const PackageManagement = () => {
   const reject = async (id) => {
     if (!window.confirm("Bạn chắc chắn muốn từ chối giao dịch này?")) return;
     try {
-      await axios.patch(`/admin/transactions/${id}/reject`);
+      await axios.patch(`${TRANSACTION_API_URL}/${id}/reject`, {}, getAxiosConfig());
       alert("Đã từ chối giao dịch");
       setPendingTransactions((prev) => prev.filter((trx) => trx.transaction_id !== id));
     } catch (err) {
@@ -140,7 +164,7 @@ const PackageManagement = () => {
   const openEditModal = (pkg) => {
     setCurrentPackage({
       ...pkg,
-      is_highlight: pkg.is_highlight === 1 || pkg.is_highlight === true,
+      noi_bat: pkg.noi_bat === 1 || pkg.noi_bat === true
     });
     setIsEditMode(true);
     showModal();
@@ -153,7 +177,6 @@ const PackageManagement = () => {
 
   return (
     <div className="package-management-container p-4">
-      {/* SCOPED CSS */}
       <style>
         {`
           .package-management-container .table th {
@@ -173,9 +196,6 @@ const PackageManagement = () => {
           .package-management-container .action-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-          }
-          .package-management-container .action-btn:active {
-            transform: translateY(0);
           }
         `}
       </style>
@@ -198,7 +218,7 @@ const PackageManagement = () => {
                     <th className="ps-4">Tên gói</th>
                     <th>Giá (VNĐ)</th>
                     <th>Thời hạn</th>
-                    <th>Tin đăng</th>
+                    <th>Số tin</th>
                     <th>Trạng thái</th>
                     <th className="text-end pe-4">Thao tác</th>
                   </tr>
@@ -212,14 +232,14 @@ const PackageManagement = () => {
                     </tr>
                   ) : (
                     packages.map((pkg) => (
-                      <tr key={pkg.package_id}>
-                        <td className="ps-4 fw-bold text-primary">{pkg.package_name}</td>
-                        <td className="fw-bold text-danger">{formatPrice(pkg.price)} đ</td>
-                        <td>{pkg.duration_days} ngày</td>
-                        <td>{pkg.max_posts} tin</td>
+                      <tr key={pkg.id}>
+                        <td className="ps-4 fw-bold text-primary">{pkg.ten_goi}</td>
+                        <td className="fw-bold text-danger">{formatPrice(pkg.gia_tien)} đ</td>
+                        <td>{pkg.thoi_han_ngay} ngày</td>
+                        <td>{pkg.so_tin_toi_da || 0} tin</td>
                         <td>
-                          <span className={`badge rounded-pill ${pkg.is_highlight ? "bg-success" : "bg-secondary"}`}>
-                            {pkg.is_highlight ? "Nổi bật" : "Thường"}
+                          <span className={`badge rounded-pill ${pkg.noi_bat ? "bg-success" : "bg-secondary"}`}>
+                            {pkg.noi_bat ? "Nổi bật" : "Thường"}
                           </span>
                         </td>
                         <td className="text-end pe-4">
@@ -243,10 +263,14 @@ const PackageManagement = () => {
         <div className="modal fade" id="packageModal" tabIndex="-1" aria-hidden="true" ref={modalRef}>
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
-              <div className={`modal-header ${isEditMode ? "bg-primary text-white" : "bg-warning text-white"}`}>
-                <h5 className="modal-title">{isEditMode ? "Cập nhật gói dịch vụ" : "Thêm gói dịch vụ mới"}</h5>
+              <div className="modal-header bg-warning text-white">
+                <h5 className="modal-title">
+                  <i className="bi bi-box-seam me-2"></i> 
+                  {isEditMode ? "Cập nhật gói dịch vụ" : "Thêm gói dịch vụ mới"}
+                </h5>
                 <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
               </div>
+              
               <div className="modal-body">
                 <form onSubmit={handleSubmit}>
                   <div className="row g-3">
@@ -257,10 +281,11 @@ const PackageManagement = () => {
                         className="form-control"
                         required
                         placeholder="VD: Gói VIP 1"
-                        value={currentPackage.package_name}
-                        onChange={(e) => setCurrentPackage({ ...currentPackage, package_name: e.target.value })}
+                        value={currentPackage.ten_goi}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, ten_goi: e.target.value })}
                       />
                     </div>
+
                     <div className="col-md-6">
                       <label className="form-label fw-bold">Giá (VNĐ) <span className="text-danger">*</span></label>
                       <input
@@ -268,67 +293,84 @@ const PackageManagement = () => {
                         step="1000"
                         className="form-control"
                         required
-                        value={currentPackage.price}
-                        onChange={(e) => setCurrentPackage({ ...currentPackage, price: e.target.value })}
+                        placeholder="VD: 50000"
+                        value={currentPackage.gia_tien}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, gia_tien: e.target.value })}
                       />
                     </div>
-                    <div className="col-md-6">
+
+                    <div className="col-md-3">
                       <label className="form-label fw-bold">Thời hạn (Ngày)</label>
                       <input
                         type="number"
                         className="form-control"
+                        placeholder="VD: 30"
                         required
-                        value={currentPackage.duration_days}
-                        onChange={(e) => setCurrentPackage({ ...currentPackage, duration_days: e.target.value })}
+                        value={currentPackage.thoi_han_ngay}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, thoi_han_ngay: e.target.value })}
                       />
                     </div>
-                    <div className="col-md-6">
+                    
+                    <div className="col-md-3">
+                      <label className="form-label fw-bold">Mức ưu tiên</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="VD: 1"
+                        required
+                        value={currentPackage.muc_uu_tien}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, muc_uu_tien: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="col-md-3">
                       <label className="form-label fw-bold">Số tin tối đa</label>
                       <input
                         type="number"
                         className="form-control"
-                        required
-                        value={currentPackage.max_posts}
-                        onChange={(e) => setCurrentPackage({ ...currentPackage, max_posts: e.target.value })}
+                        value={currentPackage.so_tin_toi_da}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, so_tin_toi_da: e.target.value })}
                       />
                     </div>
-                    <div className="col-12">
-                      <div className="form-check form-switch">
+
+                    <div className="col-md-3 d-flex align-items-end">
+                      <div className="form-check mb-2">
                         <input
                           className="form-check-input"
                           type="checkbox"
-                          id="highlightCheck"
-                          checked={currentPackage.is_highlight}
-                          onChange={(e) => setCurrentPackage({ ...currentPackage, is_highlight: e.target.checked })}
+                          id="isHighlightCheck"
+                          checked={currentPackage.noi_bat}
+                          onChange={(e) => setCurrentPackage({ ...currentPackage, noi_bat: e.target.checked })}
                         />
-                        <label className="form-check-label fw-bold" htmlFor="highlightCheck">
-                          Đặt làm gói Nổi Bật
+                        <label className="form-check-label fw-bold" htmlFor="isHighlightCheck">
+                          Là gói nổi bật?
                         </label>
                       </div>
                     </div>
+
                     <div className="col-12">
-                      <label className="form-label fw-bold">Mô tả</label>
+                      <label className="form-label fw-bold">Mô tả gói</label>
                       <textarea
                         className="form-control"
                         rows="3"
-                        value={currentPackage.description}
-                        onChange={(e) => setCurrentPackage({ ...currentPackage, description: e.target.value })}
+                        placeholder="Nhập mô tả chi tiết về quyền lợi..."
+                        value={currentPackage.mo_ta}
+                        onChange={(e) => setCurrentPackage({ ...currentPackage, mo_ta: e.target.value })}
                       ></textarea>
                     </div>
                   </div>
+                  {/* Nút ẩn để có thể submit bằng phím Enter */}
                   <button type="submit" className="d-none"></button>
                 </form>
               </div>
+              
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button
-                  onClick={handleSubmit}
-                  type="button"
-                  className={`btn ${isEditMode ? "btn-primary" : "btn-warning text-white"}`}
-                  disabled={loading}
-                >
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                  Hủy
+                </button>
+                <button onClick={handleSubmit} className="btn btn-warning text-white" disabled={loading}>
                   {loading && <span className="spinner-border spinner-border-sm me-2"></span>}
-                  {isEditMode ? "Lưu thay đổi" : "Tạo mới"}
+                  {isEditMode ? "Cập nhật" : "Lưu gói dịch vụ"}
                 </button>
               </div>
             </div>
@@ -343,7 +385,6 @@ const PackageManagement = () => {
             <i className="bi bi-hourglass-split me-2"></i> Giao dịch chờ duyệt
           </h5>
         </div>
-
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
@@ -376,18 +417,10 @@ const PackageManagement = () => {
                       <td>{new Date(trx.created_at).toLocaleString("vi-VN")}</td>
                       <td className="text-end pe-4">
                         <div className="d-flex justify-content-end gap-2">
-                          <button
-                            className="btn btn-sm btn-outline-success border-0 rounded-pill shadow-sm action-btn"
-                            onClick={() => approve(trx.transaction_id)}
-                            title="Duyệt giao dịch"
-                          >
+                          <button className="btn btn-sm btn-outline-success action-btn" onClick={() => approve(trx.transaction_id)}>
                             <i className="bi bi-check-circle-fill fs-5"></i>
                           </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger border-0 rounded-pill shadow-sm action-btn"
-                            onClick={() => reject(trx.transaction_id)}
-                            title="Từ chối giao dịch"
-                          >
+                          <button className="btn btn-sm btn-outline-danger action-btn" onClick={() => reject(trx.transaction_id)}>
                             <i className="bi bi-x-circle-fill fs-5"></i>
                           </button>
                         </div>
