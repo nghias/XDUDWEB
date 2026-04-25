@@ -45,7 +45,7 @@ const getAxiosConfig = () => {
 
   // === ACTIONS: KHÓA / MỞ KHÓA ===
   const toggleBlockUser = async (user) => {
-    if (user.vai_tro === "admin") {
+    if (user.vai_tro === "quan_tri") {
       toast("Không thể khóa tài khoản Admin!");
       return;
     }
