@@ -13,12 +13,12 @@ const UserManagement = () => {
   };
 
   // === CẤU HÌNH API & TOKEN ===
-  // Đặt BASE_API chuẩn để dễ nối chuỗi
+
   const BASE_API = "https://xdudweb-php.onrender.com/api"; 
   const API_URL = `${BASE_API}/admin/users`; 
 
 const getAxiosConfig = () => {
-  // SỬA DÒNG NÀY: đổi "token" thành "auth_token"
+
   const token = localStorage.getItem("auth_token"); 
 
   return {
@@ -45,7 +45,7 @@ const getAxiosConfig = () => {
 
   // === ACTIONS: KHÓA / MỞ KHÓA ===
   const toggleBlockUser = async (user) => {
-    if (user.vai_tro === "admin") {
+    if (user.vai_tro === "quan_tri") {
       toast("Không thể khóa tài khoản Admin!");
       return;
     }
